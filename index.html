@@ -48,19 +48,15 @@ tr:hover td{background:#fafaf8;}
 .badge-architect{background:#E6F1FB;color:#0C447C;}
 .badge-realtor{background:#FAEEDA;color:#633806;}
 .badge-other{background:#F1EFE8;color:#444441;}
-.ei{font-size:11px;border:1px solid transparent;border-radius:5px;padding:2px 5px;background:transparent;color:#1a1a1a;width:100%;font-family:inherit;}
+.ei{font-size:12px;border:1px solid transparent;border-radius:5px;padding:3px 6px;background:transparent;color:#1a1a1a;width:100%;font-family:inherit;}
 .ei:hover{border-color:#e0e0de;background:#fff;}
 .ei:focus{border-color:#1a6b3a;background:#fff;outline:none;}
 .ei::placeholder{color:#bbb;}
-.fsel{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;}
+.fsel{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;}
 .fsel:focus{border-color:#1a6b3a;}
 .outreach-cell{display:flex;flex-direction:column;gap:4px;}
 .outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;font-family:inherit;}
 .outreach-date:focus{border-color:#1a6b3a;}
-.outreach-note{font-size:11px;border:1px solid transparent;border-radius:5px;padding:2px 5px;background:transparent;color:#1a1a1a;width:100%;font-family:inherit;resize:none;}
-.outreach-note:hover{border-color:#e0e0de;background:#fff;}
-.outreach-note:focus{border-color:#1a6b3a;background:#fff;outline:none;}
-.outreach-note::placeholder{color:#bbb;}
 .outreach-sent{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;display:inline-block;margin-bottom:2px;}
 .email-sent{background:#faeeda;color:#633806;}
 .li-sent{background:#E6F1FB;color:#0C447C;}
@@ -111,6 +107,17 @@ tr:hover td{background:#fafaf8;}
 .modal-field textarea{resize:vertical;min-height:60px;}
 .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+
+/* ── Log-style notes ── */
+.notes-log{display:flex;flex-direction:column;gap:0;width:100%;}
+.note-entry{display:flex;flex-direction:column;gap:1px;padding:5px 0;border-bottom:1px solid #f0f0ee;width:100%;}
+.note-entry:last-of-type{border-bottom:none;}
+.note-ts{font-size:10px;color:#bbb;line-height:1.3;letter-spacing:0.01em;}
+.note-text{font-size:12px;color:#1a1a1a;line-height:1.45;word-break:break-word;width:100%;}
+.note-add{margin-top:5px;width:100%;}
+.note-add input{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:5px 8px;width:100%;background:#fafaf8;outline:none;font-family:inherit;color:#1a1a1a;}
+.note-add input:focus{border-color:#1a6b3a;background:#fff;}
+.note-add input::placeholder{color:#bbb;}
 </style>
 </head>
 <body>
@@ -260,19 +267,19 @@ tr:hover td{background:#fafaf8;}
       <div class="scroll-wrap">
         <table>
           <colgroup>
+            <col style="width:150px">
+            <col style="width:80px">
             <col style="width:110px">
-            <col style="width:70px">
-            <col style="width:90px">
-            <col style="width:90px">
+            <col style="width:110px">
+            <col style="width:210px">
             <col style="width:170px">
+            <col style="width:50px">
             <col style="width:130px">
-            <col style="width:42px">
-            <col style="width:110px">
-            <col style="width:115px">
-            <col style="width:118px">
-            <col style="width:98px">
-            <col style="width:82px">
-            <col style="width:138px">
+            <col style="width:200px">
+            <col style="width:200px">
+            <col style="width:120px">
+            <col style="width:100px">
+            <col style="width:220px">
             <col style="width:36px">
           </colgroup>
           <thead>
@@ -331,6 +338,39 @@ function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase
 function repColor(i){return REP_COLORS[i%REP_COLORS.length];}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+/* ── Note log helpers ── */
+function parseNotes(str){
+  if(!str)return[];
+  const entries=[];
+  str.split('\n').forEach(line=>{
+    line=line.trim();if(!line)return;
+    const m=line.match(/^\[([^\]]+)\] (.+)$/);
+    if(m)entries.push({ts:m[1],text:m[2]});
+    else entries.push({ts:'',text:line});
+  });
+  return entries;
+}
+function fmtNoteTs(){
+  const now=new Date();
+  return now.toLocaleDateString([],{month:'short',day:'numeric'})+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+function renderLogHtml(entries,appendCmd){
+  const rows=entries.map(e=>`<div class="note-entry"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){${appendCmd};}"/></div></div>`;
+}
+function appendContactNote(id,inputEl,field){
+  const text=inputEl.value.trim();if(!text)return;
+  const c=getC(id);
+  const entry=`[${fmtNoteTs()}] ${text}`;
+  c[field]=c[field]?c[field]+'\n'+entry:entry;
+  inputEl.value='';
+  queueSave(id);
+  if(field==='notes')addAct(c.company,'notes',text,c.rep);
+  else if(field==='emailNote')addAct(c.company,'emailNote',text,c.rep);
+  else if(field==='liNote')addAct(c.company,'liNote',text,c.rep);
+  render();
+}
 
 let contacts=[];
 let reps=["David McLendon"];
@@ -404,12 +444,9 @@ function setContactField(id,ci,field,v){
 }
 function setStatus(id,v){setField(id,'status',v);}
 function setDate(id,v){setField(id,'visitDate',v);}
-function setNoteBlur(id,v){const c=getC(id);if(!c)return;const old=c.notes||'';c.notes=v;queueSave(id);if(v.trim()&&v.trim()!==old.trim())addAct(c.company,'notes',v,c.rep);}
 function setRep(id,v){setField(id,'rep',v);render();}
 function setEmailDate(id,v){setField(id,'emailDate',v);render();}
-function setEmailNoteBlur(id,v){const c=getC(id);if(!c)return;const old=c.emailNote||'';c.emailNote=v;queueSave(id);if(v.trim()&&v.trim()!==old.trim())addAct(c.company,'emailNote',v,c.rep);}
 function setLiDate(id,v){setField(id,'liDate',v);render();}
-function setLiNoteBlur(id,v){const c=getC(id);if(!c)return;const old=c.liNote||'';c.liNote=v;queueSave(id);if(v.trim()&&v.trim()!==old.trim())addAct(c.company,'liNote',v,c.rep);}
 
 function addContact(id){const c=getC(id);if(!c)return;c.contacts.push({name:'',title:'',phone:'',email:'',linkedin:''});queueSave(id);render();setTimeout(()=>{const rows=document.querySelectorAll(`[data-cr="${id}"]`);if(rows.length){const inp=rows[rows.length-1].querySelector('input');if(inp)inp.focus();}},50);}
 function removeContact(id,ci){const c=getC(id);if(!c||c.contacts.length<=1){showToast('At least one contact required.');return;}c.contacts.splice(ci,1);queueSave(id);render();}
@@ -462,12 +499,12 @@ function renderOutreachCell(c,type){
   const sentClass=type==='email'?'email-sent':'li-sent';
   const sentLabel=type==='email'?'Email sent':'Connected';
   const onDateChange=type==='email'?`setEmailDate('${c.id}',this.value)`:`setLiDate('${c.id}',this.value)`;
-  const onNoteBlur=type==='email'?`setEmailNoteBlur('${c.id}',this.value)`:`setLiNoteBlur('${c.id}',this.value)`;
+  const field=type==='email'?'emailNote':'liNote';
   const bgStyle=type==='email'?'background:#fffdf7;':'background:#f7faff;';
   return`<div class="outreach-cell" style="${bgStyle}padding:3px;">
     ${dateVal?`<span class="outreach-sent ${sentClass}">${sentLabel} ${dateVal}</span>`:''}
     <input type="date" class="outreach-date" value="${dateVal||''}" onchange="${onDateChange}" title="Date of outreach"/>
-    <textarea class="outreach-note" rows="2" placeholder="What happened / follow-up…" onblur="${onNoteBlur}">${esc(noteVal)}</textarea>
+    ${renderLogHtml(parseNotes(noteVal),`appendContactNote('${c.id}',this,'${field}')`)}
   </div>`;
 }
 
@@ -515,7 +552,7 @@ function render(){
       <td style="padding:4px 6px;">${renderOutreachCell(c,'li')}</td>
       <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select></td>
       <td><input type="date" class="fsel" value="${c.visitDate||''}" onchange="setDate('${c.id}',this.value)"/></td>
-      <td><input type="text" class="ei" placeholder="Add note…" value="${esc(c.notes)}" onblur="setNoteBlur('${c.id}',this.value)"/></td>
+      <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`)}</td>
       <td>
         <button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete contact" style="position:static;font-size:18px;color:#ddd;padding:2px;">
           <i class="ti ti-trash" style="font-size:13px;"></i>
@@ -554,13 +591,16 @@ function saveModal(){
   if(!company){showToast('Company name is required.');document.getElementById('m-company').focus();return;}
   const contact={name:document.getElementById('m-cname').value.trim(),title:document.getElementById('m-ctitle').value.trim(),phone:document.getElementById('m-cphone').value.trim(),email:document.getElementById('m-cemail').value.trim(),linkedin:document.getElementById('m-clinkedin').value.trim()};
   const lotsVal=document.getElementById('m-lots').value;
+  const rawNotes=document.getElementById('m-notes').value.trim();
   if(editingId){
     const c=getC(editingId);
-    c.company=company;c.category=document.getElementById('m-category').value;c.zone=document.getElementById('m-zone').value.trim();c.address=document.getElementById('m-address').value.trim();c.website=document.getElementById('m-website').value.trim();c.lots=lotsVal===''?null:parseInt(lotsVal);c.source=document.getElementById('m-source').value.trim();c.notes=document.getElementById('m-notes').value.trim();
+    c.company=company;c.category=document.getElementById('m-category').value;c.zone=document.getElementById('m-zone').value.trim();c.address=document.getElementById('m-address').value.trim();c.website=document.getElementById('m-website').value.trim();c.lots=lotsVal===''?null:parseInt(lotsVal);c.source=document.getElementById('m-source').value.trim();c.notes=rawNotes;
     if(contact.name)c.contacts[0]=contact;
     queueSave(editingId);showToast(`${company} updated.`);
   } else {
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:document.getElementById('m-notes').value.trim(),status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',createdAt:todayKey()};
+    // Wrap initial notes as a log entry if provided
+    const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
@@ -630,7 +670,7 @@ function copyReport(){
 function confirmClear(){if(!confirm('Clear the entire activity log?'))return;activity=[];apiPost({action:'saveActivity',data:{_clear:true}}).catch(()=>{});renderReport();}
 
 function exportCSV(){
-  const rows=[['Company','Category','Zone','Met where','Contact name','Title','Phone','Email','LinkedIn','Address','Website','Lots','Assigned rep','Email outreach date','Email note','LinkedIn outreach date','LinkedIn note','Status','Last visit','Notes','Added']];
+  const rows=[['Company','Category','Zone','Met where','Contact name','Title','Phone','Email','LinkedIn','Address','Website','Lots','Assigned rep','Email outreach date','Email notes','LinkedIn outreach date','LinkedIn notes','Status','Last visit','Notes','Added']];
   contacts.forEach(c=>{(c.contacts||[{name:'',title:'',phone:'',email:'',linkedin:''}]).forEach((ct,ci)=>{rows.push([ci===0?c.company:'',ci===0?c.category:'',ci===0?c.zone:'',ci===0?c.source:'',ct.name,ct.title,ct.phone,ct.email,ct.linkedin,ci===0?c.address:'',ci===0?c.website:'',ci===0?(c.lots==null?'':c.lots):'',ci===0?(c.rep||''):'',ci===0?(c.emailDate||''):'',ci===0?(c.emailNote||''):'',ci===0?(c.liDate||''):'',ci===0?(c.liNote||''):'',ci===0?(STATUS_LABEL[c.status||'none']||''):'',ci===0?(c.visitDate||''):'',ci===0?(c.notes||''):'',ci===0?(c.createdAt||''):'' ]);});});
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='aidan_new_contacts.csv';a.click();
