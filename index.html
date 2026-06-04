@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Aidan's Builder Tracker</title>
+<title>Aidan's New Contact Tracker</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -29,17 +29,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab:hover{color:#1a1a1a;}
 .tab.active{color:#003DA5;border-bottom-color:#003DA5;font-weight:500;}
 .card{background:#fff;border:1px solid #e5e5e3;border-radius:10px;overflow:hidden;margin-bottom:16px;}
-.filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #f0f0ee;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #f0f0ee;align-items:center;}
 .filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:7px;border:1px solid #e0e0de;background:#fff;color:#1a1a1a;outline:none;}
-.filters input{flex:1;min-width:140px;}
+.filters input[type=text]{flex:1;min-width:140px;}
 .filters input:focus,.filters select:focus{border-color:#003DA5;}
 .edit-hint{font-size:11px;color:#888;padding:8px 16px;background:#fafaf8;border-bottom:1px solid #f0f0ee;display:flex;align-items:center;gap:5px;}
 .scroll-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 300px);}
-.col-freeze-1{position:sticky;left:0;z-index:6;background:#fff;}
-.col-freeze-2{position:sticky;left:28px;z-index:6;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,.06);}
+.col-freeze-1{position:sticky;left:0;z-index:6;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,.06);}
 th.col-freeze-1{background:#fafaf8;z-index:15;}
-th.col-freeze-2{background:#fafaf8;z-index:15;}
-tr:hover td.col-freeze-1,tr:hover td.col-freeze-2{background:#fafaf8;}
+tr:hover td.col-freeze-1{background:#fafaf8;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
 th{text-align:left;font-weight:500;font-size:11px;color:#888;border-bottom:1px solid #e5e5e3;padding:8px 10px;background:#fafaf8;white-space:nowrap;position:sticky;top:0;z-index:10;}
 th.th-email{background:#fdf8f0;}
@@ -48,8 +46,11 @@ td{padding:8px 10px;border-bottom:1px solid #f0f0ee;vertical-align:top;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#fafaf8;}
 .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;white-space:nowrap;}
-.badge-lux{background:#E6F1FB;color:#0C447C;}
-.badge-vol{background:#EEEDFE;color:#3C3489;}
+.badge-builder{background:#E1F5EE;color:#085041;}
+.badge-supplier{background:#EEEDFE;color:#3C3489;}
+.badge-architect{background:#E6F1FB;color:#0C447C;}
+.badge-realtor{background:#FAEEDA;color:#633806;}
+.badge-other{background:#F1EFE8;color:#444441;}
 .ei{font-size:12px;border:1px solid transparent;border-radius:5px;padding:3px 6px;background:transparent;color:#1a1a1a;width:100%;font-family:inherit;}
 .ei:hover{border-color:#e0e0de;background:#fff;}
 .ei:focus{border-color:#003DA5;background:#fff;outline:none;}
@@ -59,6 +60,10 @@ tr:hover td{background:#fafaf8;}
 .outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 6px;background:#fafaf8;color:#888;width:100%;outline:none;font-family:inherit;margin-top:4px;}
 .outreach-date:focus{border-color:#003DA5;background:#fff;color:#1a1a1a;}
 .note-sent-label{font-weight:600;color:#1a1a1a;}
+.priority-sel-now{background:#D4A017;color:#fff;font-weight:700;}
+.priority-sel-high{background:#C0392B;color:#fff;font-weight:700;}
+.priority-sel-med{background:#F9E04B;color:#5a4a00;font-weight:600;}
+.priority-sel-low{background:#bbb;color:#fff;font-weight:600;}
 .add-contact-btn{font-size:11px;color:#003DA5;background:none;border:none;cursor:pointer;padding:3px 0;display:flex;align-items:center;gap:3px;margin-top:4px;}
 .add-contact-btn:hover{text-decoration:underline;}
 .contact-row{border-bottom:1px solid #f5f5f3;padding-bottom:5px;margin-bottom:5px;position:relative;padding-right:18px;}
@@ -70,6 +75,8 @@ tr:hover td{background:#fafaf8;}
 .btn:hover{background:#f5f5f3;}
 .btn-primary{background:#003DA5;color:#fff;border-color:#003DA5;}
 .btn-primary:hover{background:#002f8a;}
+.btn-danger{background:#fff;color:#A32D2D;border-color:#F09595;}
+.btn-danger:hover{background:#fff5f5;}
 .log-entry{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f3;}
 .log-entry:last-child{border-bottom:none;}
 .log-time{font-size:11px;color:#aaa;white-space:nowrap;min-width:52px;padding-top:1px;}
@@ -83,6 +90,9 @@ tr:hover td{background:#fafaf8;}
 .day-group{margin-bottom:1.25rem;}
 .day-label{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #f0f0ee;}
 .empty{font-size:13px;color:#aaa;padding:2rem;text-align:center;}
+.empty-table{text-align:center;padding:3rem 1rem;}
+.empty-table i{font-size:36px;color:#ddd;display:block;margin-bottom:12px;}
+.empty-table p{color:#aaa;font-size:13px;margin-bottom:16px;}
 .rep-manager-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
 .rep-chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 12px;border-radius:99px;border:1px solid #e0e0de;}
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:12px;}
@@ -90,6 +100,17 @@ tr:hover td{background:#fafaf8;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .3s;}
 .toast.show{opacity:1;}
+.add-row-bar{padding:12px 16px;border-top:1px solid #f0f0ee;background:#fafaf8;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-field label{display:block;font-size:11px;font-weight:500;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.modal-field input,.modal-field select,.modal-field textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:7px;border:1px solid #e0e0de;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;}
+.modal-field input:focus,.modal-field select:focus,.modal-field textarea:focus{border-color:#003DA5;}
+.modal-field textarea{resize:vertical;min-height:60px;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
 
 /* ── Log-style notes ── */
 .notes-log{display:flex;flex-direction:column;gap:0;width:100%;}
@@ -110,14 +131,92 @@ tr:hover td{background:#fafaf8;}
 
 <div class="loading-overlay" id="loading">
   <div class="spinner"></div>
-  <div style="font-size:13px;color:#888;">Loading builder data…</div>
+  <div style="font-size:13px;color:#888;">Loading contacts…</div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Add new contact</h3>
+    <div class="modal-field">
+      <label>Company / Business name *</label>
+      <input type="text" id="m-company" placeholder="e.g. Smith Luxury Homes"/>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Category</label>
+        <select id="m-category">
+          <option value="Builder">Builder</option>
+          <option value="Supplier">Supplier</option>
+          <option value="Architect">Architect</option>
+          <option value="Realtor">Realtor</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Zone / Area</label>
+        <input type="text" id="m-zone" placeholder="e.g. Alpharetta, Milton…"/>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Office address</label>
+      <input type="text" id="m-address" placeholder="Street address"/>
+    </div>
+    <div class="modal-field">
+      <label>Website</label>
+      <input type="text" id="m-website" placeholder="e.g. smithluxuryhomes.com"/>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Lot / project pipeline</label>
+        <input type="number" id="m-lots" placeholder="# lots"/>
+      </div>
+      <div class="modal-field">
+        <label>Where I met them</label>
+        <input type="text" id="m-source" placeholder="e.g. GAHBA event, referral…"/>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin:14px 0 8px;padding-top:8px;border-top:1px solid #f0f0ee;">Primary contact</div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Full name *</label>
+        <input type="text" id="m-cname" placeholder="First Last"/>
+      </div>
+      <div class="modal-field">
+        <label>Title / role</label>
+        <input type="text" id="m-ctitle" placeholder="e.g. Owner, Purchasing Mgr"/>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Phone</label>
+        <input type="text" id="m-cphone" placeholder="(xxx) xxx-xxxx"/>
+      </div>
+      <div class="modal-field">
+        <label>Email</label>
+        <input type="text" id="m-cemail" placeholder="name@company.com"/>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>LinkedIn</label>
+      <input type="text" id="m-clinkedin" placeholder="linkedin.com/in/…"/>
+    </div>
+    <div class="modal-field">
+      <label>Initial notes</label>
+      <textarea id="m-notes" placeholder="What did you talk about? Any next steps?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveModal()"><i class="ti ti-check"></i> Save contact</button>
+    </div>
+  </div>
+</div>
 
 <div class="topbar">
   <div class="brand">
     <img src="./logo.jpg" alt="Aidan's Home Services" style="height:42px;width:auto;object-fit:contain;"/>
-    <div class="brand-sub" style="margin-left:4px;font-weight:700;color:#1a1a1a;">Builder Outreach Tracker</div>
+    <div class="brand-sub" style="margin-left:4px;font-weight:700;color:#1a1a1a;">New Contact Tracker</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <div class="sync-indicator">
@@ -131,14 +230,14 @@ tr:hover td{background:#fafaf8;}
 
 <div class="main">
   <div class="stats">
-    <div class="stat"><div class="stat-label">Total builders</div><div class="stat-val">33</div></div>
-    <div class="stat"><div class="stat-label">Not contacted</div><div class="stat-val" id="s-none">—</div></div>
-    <div class="stat"><div class="stat-label">In progress</div><div class="stat-val" id="s-prog" style="color:#854F0B;">—</div></div>
-    <div class="stat"><div class="stat-label">Approved / meeting</div><div class="stat-val" id="s-done" style="color:#003DA5;">—</div></div>
+    <div class="stat"><div class="stat-label">Total contacts</div><div class="stat-val" id="s-total">0</div></div>
+    <div class="stat"><div class="stat-label">Not contacted</div><div class="stat-val" id="s-none">0</div></div>
+    <div class="stat"><div class="stat-label">In progress</div><div class="stat-val" id="s-prog" style="color:#854F0B;">0</div></div>
+    <div class="stat"><div class="stat-label">Meeting / approved</div><div class="stat-val" id="s-done" style="color:#003DA5;">0</div></div>
   </div>
 
   <div class="tab-row">
-    <button class="tab active" id="tab-log" onclick="switchTab('log')"><i class="ti ti-list"></i> Visit log</button>
+    <button class="tab active" id="tab-log" onclick="switchTab('log')"><i class="ti ti-address-book"></i> Contacts</button>
     <button class="tab" id="tab-report" onclick="switchTab('report')"><i class="ti ti-clipboard"></i> Boss report</button>
     <button class="tab" id="tab-reps" onclick="switchTab('reps')"><i class="ti ti-users"></i> Manage reps</button>
   </div>
@@ -146,21 +245,14 @@ tr:hover td{background:#fafaf8;}
   <div id="view-log">
     <div class="card">
       <div class="filters">
-        <input type="text" id="search" placeholder="Search builder, contact…" oninput="render()"/>
-        <select id="f-zone" onchange="render()">
-          <option value="">All zones</option>
-          <option>N. Alpharetta / Milton</option>
-          <option>N. Cumming / Forsyth</option>
-          <option>Northwest Marietta / Woodstock</option>
-          <option>Northeast Johns Creek</option>
-          <option>Central / ITP Buckhead</option>
-          <option>South / Newnan / Hoschton</option>
-          <option>East Gwinnett</option>
-        </select>
-        <select id="f-type" onchange="render()">
-          <option value="">All types</option>
-          <option value="Luxury">Luxury</option>
-          <option value="Volume">Volume</option>
+        <input type="text" id="search" placeholder="Search name, company, zone…" oninput="render()"/>
+        <select id="f-cat" onchange="render()">
+          <option value="">All categories</option>
+          <option>Builder</option>
+          <option>Supplier</option>
+          <option>Architect</option>
+          <option>Realtor</option>
+          <option>Other</option>
         </select>
         <select id="f-status" onchange="render()">
           <option value="">All statuses</option>
@@ -180,53 +272,50 @@ tr:hover td{background:#fafaf8;}
         <select id="f-rep" onchange="render()">
           <option value="">All reps</option>
         </select>
+        <button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add contact</button>
       </div>
-      <div class="edit-hint"><i class="ti ti-pencil" style="font-size:12px;"></i> Click any field to edit — all changes save live to the shared Google Sheet.</div>
+      <div class="edit-hint"><i class="ti ti-pencil" style="font-size:12px;"></i> Click any field to edit inline — all changes save live to the shared Google Sheet.</div>
       <div class="scroll-wrap">
         <table>
           <colgroup>
-            <col style="width:28px">
             <col style="width:210px">
             <col style="width:100px">
             <col style="width:110px">
             <col style="width:210px">
+            <col style="width:110px">
             <col style="width:210px">
             <col style="width:120px">
-            <col style="width:155px">
-            <col style="width:125px">
             <col style="width:130px">
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:120px">
             <col style="width:100px">
-            <col style="width:260px">
-            <col style="width:260px">
             <col style="width:220px">
+            <col style="width:36px">
           </colgroup>
           <thead>
             <tr>
-              <th class="col-freeze-1">#</th>
-              <th class="col-freeze-2">Builder</th>
+              <th class="col-freeze-1">Company</th>
               <th>Priority</th>
-              <th>Zone</th>
+              <th>Zone / area</th>
               <th>Contacts</th>
+              <th>Met where</th>
               <th>Address / website</th>
               <th>Vacant Dev. Lots</th>
-              <th>Closing Price (Avg)</th>
-              <th>Living Sq Ft (Avg)</th>
               <th>Assigned rep</th>
               <th class="th-email"><i class="ti ti-mail" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Email outreach</th>
               <th class="th-li"><i class="ti ti-brand-linkedin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>LinkedIn outreach</th>
               <th><i class="ti ti-map-pin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Site visits</th>
               <th>Status</th>
               <th>Last activity</th>
-              <th>Angle</th>
-              <th>Action</th>
               <th>General notes</th>
+              <th></th>
             </tr>
           </thead>
-          <tbody id="tbody"></tbody>
+          <tbody id="tbody">
+            <tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>No contacts yet — click "Add contact" to get started.</p></div></td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -252,128 +341,16 @@ tr:hover td{background:#fafaf8;}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycby8gbUs3PPRFcwreJ2s5HwDgr65V2xbumY_mAq-m4Un0_QWeu7fMApB2Jjhd7cEYOxVBQ/exec';
 
-const DEFAULT_BUILDERS=[
-  {p:1,name:"Perry Custom Homes",type:"Luxury",zone:"N. Alpharetta / Milton",lots:22,contacts:[{name:"Christopher Perry",title:"Owner",phone:"(678) 662-6305",email:"",linkedin:"linkedin.com/in/christopher-perry-2b31ab169"}],address:"4080 McGinnis Ferry Rd, Suite 902, Alpharetta, GA 30005",website:"perrycustomhomes.com"},
-  {p:2,name:"Ashton Woods Homes",type:"Volume",zone:"N. Alpharetta / Milton",lots:1752,contacts:[{name:"SVP Purchasing",title:"Corporate purchasing",phone:"(770) 481-2000",email:"",linkedin:""},{name:"Construction Manager / Super",title:"On-site",phone:"",email:"",linkedin:""}],address:"3820 Mansell Rd, Suite 400, Alpharetta, GA 30022",website:"ashtonwoods.com"},
-  {p:3,name:"Arkan Homes LLC",type:"Luxury",zone:"N. Alpharetta / Milton",lots:19,contacts:[{name:"Owner / Principal",title:"Identify via LinkedIn",phone:"(404) 666-5688",email:"",linkedin:""}],address:"3275 North Point Pkwy, Suite 201, Alpharetta, GA 30005",website:"arkanhomes.com"},
-  {p:4,name:"Vertical Luxury",type:"Luxury",zone:"N. Alpharetta / Milton",lots:null,contacts:[{name:"Owner / Principal",title:"Via website contact form",phone:"",email:"",linkedin:""}],address:"Claxton site: Hopewell Rd near Bell Memorial Park, Milton, GA",website:"verticalluxury.com/contact"},
-  {p:5,name:"Green Brick / Trophy Signature",type:"Volume",zone:"N. Alpharetta / Milton",lots:451,contacts:[{name:"Atlanta Division Purchasing",title:"Corporate",phone:"",email:"",linkedin:""},{name:"Construction Manager",title:"On-site",phone:"",email:"",linkedin:""}],address:"Atlanta HQ — see greenbrickpartners.com",website:"greenbrickpartners.com"},
-  {p:6,name:"Fuqua & Associates",type:"Luxury",zone:"N. Alpharetta / Milton",lots:11,contacts:[{name:"Tommy Fuqua Jr.",title:"Owner / GC",phone:"(770) 475-1537",email:"",linkedin:"GAHBA-listed, attends events"}],address:"985 Canonero Dr, Alpharetta, GA 30004",website:""},
-  {p:7,name:"Whitestone Builders LLC",type:"Luxury",zone:"N. Alpharetta / Milton",lots:0,contacts:[{name:"Mason Meadows",title:"PM — gatekeeper to Jeff",phone:"",email:"",linkedin:""},{name:"Jeff Wertz",title:"Owner / GC",phone:"",email:"",linkedin:""}],address:"370 Concord St, Alpharetta, GA 30009",website:""},
-  {p:8,name:"Toll Brothers",type:"Volume",zone:"N. Cumming / Forsyth",lots:1836,contacts:[{name:"Atlanta Division Purchasing",title:"Trade Partner program",phone:"(888) 686-5542",email:"",linkedin:""}],address:"Crossing at Coal Mountain, Cumming, Forsyth County",website:"tollbrothers.com/georgia"},
-  {p:9,name:"Elevation Building Co LLC",type:"Luxury",zone:"N. Cumming / Forsyth",lots:19,contacts:[{name:"Eric Reidinger",title:"COO",phone:"",email:"info@elevationbuildingco.com",linkedin:""},{name:"Justin Mimbs",title:"CFO",phone:"",email:"info@elevationbuildingco.com",linkedin:""}],address:"4267 Pilgrim Mill Rd, Cumming, GA 30041",website:"elevationbuildingco.com"},
-  {p:10,name:"Tony Brown Custom Homes",type:"Luxury",zone:"N. Cumming / Forsyth",lots:1,contacts:[{name:"Tony Brown",title:"Owner / GC",phone:"",email:"",linkedin:""},{name:"Pete Brown",title:"Son — next-gen relationship",phone:"",email:"",linkedin:""}],address:"4360 N Industrial Dr, Suite 800, Cumming, GA 30041",website:"tonybrowncustomhomes.com"},
-  {p:11,name:"Cotton States Premier",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:38,contacts:[{name:"Owner / Principal",title:"Identify via LinkedIn",phone:"(770) 973-5685",email:"",linkedin:"Search: Cotton States Premier Properties Atlanta"}],address:"115 Village Centre West, Woodstock, GA 30188",website:"cspnewhomes.com"},
-  {p:12,name:"Pulte Homes",type:"Volume",zone:"Northwest Marietta / Woodstock",lots:1411,contacts:[{name:"Purchasing Manager",title:"Alpharetta division",phone:"(770) 887-6461",email:"",linkedin:""},{name:"Construction Manager",title:"On-site Woodstock",phone:"",email:"",linkedin:""}],address:"2475 Northwinds Pkwy, Alpharetta, GA 30009",website:"pulte.com"},
-  {p:13,name:"Traton Homes",type:"Volume",zone:"Northwest Marietta / Woodstock",lots:276,contacts:[{name:"Principal / Purchasing",title:"GAHBA member",phone:"",email:"",linkedin:"Find at GAHBA events"}],address:"Cherokee / Cobb / Paulding Counties",website:"tratonhomes.com"},
-  {p:14,name:"Patrick Malloy Communities",type:"Volume",zone:"Northwest Marietta / Woodstock",lots:113,contacts:[{name:"Owner / Principal",title:"Identify via LinkedIn",phone:"",email:"",linkedin:"Search: Patrick Malloy Communities"}],address:"Cherokee County / Canton / Forsyth",website:"patrickmalloy.com"},
-  {p:15,name:"Epic Homes LLC",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:null,contacts:[{name:"Joey Hipps",title:"Founder / President",phone:"",email:"",linkedin:"linkedin.com/in/joey-hipps-a3623815"}],address:"884 Madison Grove Lane, Marietta, GA 30064",website:"epichomesgeorgia.com"},
-  {p:16,name:"Navkar Builders LLC",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:5,contacts:[{name:"Owner / Principal",title:"Identify via LinkedIn",phone:"(678) 523-5997",email:"",linkedin:""}],address:"Marietta, GA 30062",website:"navkarusa.com"},
-  {p:17,name:"Treetop Residential",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:11,contacts:[{name:"Burke Jackson",title:"Founder & Owner",phone:"(770) 592-2404",email:"",linkedin:"GAHBA member"}],address:"5790 Holly Springs Pkwy, Woodstock, GA 30188",website:"treetopresidential.com"},
-  {p:18,name:"Spencer Love Homes LLC",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:0,contacts:[{name:"Chris Spencer",title:"Co-founder",phone:"(678) 918-4599",email:"",linkedin:"linkedin.com/in/chris-spencer-b25065165"},{name:"Eric Love",title:"Co-founder",phone:"",email:"",linkedin:"linkedin.com/in/eric-love-slh"}],address:"505 Hames Rd NW, Marietta, GA 30060",website:"spencerlovehomes.com"},
-  {p:19,name:"Loudermilk Homes",type:"Luxury",zone:"Northwest Marietta / Woodstock",lots:null,contacts:[{name:"Principal / Owner",title:"NAHB 2024 finalist",phone:"(770) 485-2600",email:"info@loudermilkhomes.com",linkedin:""}],address:"1827 Powers Ferry Rd SE, Bldg 6, Suite 300, Atlanta, GA 30339",website:"loudermilkhomes.com"},
-  {p:20,name:"The Providence Group",type:"Luxury",zone:"Northeast Johns Creek",lots:null,contacts:[{name:"Construction / Purchasing",title:"Single-family division",phone:"",email:"",linkedin:"Identify via theprovidencegroup.com"}],address:"Based in Johns Creek, GA",website:"theprovidencegroup.com"},
-  {p:21,name:"David Weekley Homes",type:"Volume",zone:"Northeast Johns Creek",lots:610,contacts:[{name:"Atlanta Division Purchasing",title:"Corporate",phone:"",email:"",linkedin:""},{name:"Construction Manager",title:"On-site",phone:"",email:"",linkedin:""}],address:"Metro Atlanta — see davidweekley.com",website:"davidweekley.com"},
-  {p:22,name:"Peachland Homes Inc",type:"Luxury",zone:"Northeast Johns Creek",lots:1,contacts:[{name:"Ty White",title:"Owner / Principal",phone:"(770) 844-9976",email:"info@peachlandhomes.com",linkedin:""}],address:"2494 Jett Ferry Rd, Suite 202, Dunwoody, GA 30338",website:"peachlandhomes.com"},
-  {p:23,name:"Crownline Homes",type:"Luxury",zone:"Northeast Johns Creek",lots:0,contacts:[{name:"Robert King",title:"President",phone:"(770) 858-5113",email:"",linkedin:""},{name:"Michael Sakoutis",title:"VP Construction / EarthCraft",phone:"",email:"",linkedin:""}],address:"10050 Medlock Bridge Rd, Suite 110, Johns Creek, GA 30097",website:"crownlinehomesga.com"},
-  {p:24,name:"Capital Design Group Inc",type:"Luxury",zone:"Northeast Johns Creek",lots:3,contacts:[{name:"Donnie Chapman",title:"Principal",phone:"(770) 642-8272",email:"",linkedin:""},{name:"Matt Stubblefield",title:"Principal",phone:"",email:"",linkedin:""}],address:"1235 Hightower Trail, Atlanta, GA 30350",website:"capitaldesignhomes.com"},
-  {p:25,name:"White Oak Signature Homes",type:"Luxury",zone:"Northeast Johns Creek",lots:0,contacts:[{name:"Finn Smith",title:"Founder",phone:"",email:"",linkedin:"Find at GAHBA or NAHB"}],address:"Peachtree Corners, GA",website:"whiteoaksignaturehomes.com"},
-  {p:26,name:"Kolter Homes",type:"Volume",zone:"Central / ITP Buckhead",lots:155,contacts:[{name:"Joe Hawkins",title:"Director of Sales / Purchasing",phone:"(470) 604-7302",email:"",linkedin:"linkedin.com/in/joe-hawkins-9252256"},{name:"Tony Adams",title:"Event contact — GAHBA/NAHB",phone:"",email:"",linkedin:""}],address:"107 West Paces Ferry Rd, Suite 200, Atlanta, GA 30305",website:"kolterhomes.com"},
-  {p:27,name:"Rockhaven Homes",type:"Volume",zone:"Central / ITP Buckhead",lots:738,contacts:[{name:"Leadership team",title:"Identify via theorg.com",phone:"(470) 645-0128",email:"",linkedin:""}],address:"4062 Peachtree Rd NE, Suite A277, Atlanta, GA 30319",website:"rockhavenga.com"},
-  {p:28,name:"Hedgewood Homes",type:"Luxury",zone:"Central / ITP Buckhead",lots:null,contacts:[{name:"Pam Sessions",title:"Co-Founder",phone:"",email:"",linkedin:"GAHBA member"},{name:"Don Donnelly",title:"Co-Founder",phone:"",email:"",linkedin:"GAHBA member"}],address:"2974 Hardman Ct NE, Atlanta, GA (Brookhaven)",website:"hedgewoodhomes.com"},
-  {p:29,name:"South Haven Build Partners",type:"Luxury",zone:"Central / ITP Buckhead",lots:5,contacts:[{name:"Principal",title:"Identify via LinkedIn",phone:"(404) 488-2431",email:"",linkedin:""}],address:"Atlanta, GA 30307",website:"southhavenbuilders.com"},
-  {p:30,name:"Bercher Homes LLC",type:"Volume",zone:"Central / ITP Buckhead",lots:52,contacts:[{name:"Owner / Principal",title:"Identify via LinkedIn",phone:"",email:"",linkedin:"Search: Bercher Homes Atlanta"}],address:"Metro Atlanta — see bercherhomes.com",website:"bercherhomes.com"},
-  {p:31,name:"PLH Homes LLC",type:"Luxury",zone:"Central / ITP Buckhead",lots:0,contacts:[{name:"Patrick Henderson",title:"Founder",phone:"(404) 391-9078",email:"",linkedin:"linkedin.com/in/patricklhenderson"}],address:"1619 Frazier Rd, Decatur, GA 30033",website:"plhhomes.com"},
-  {p:32,name:"D.R. Horton",type:"Volume",zone:"South / Newnan / Hoschton",lots:4804,contacts:[{name:"Atlanta Division Purchasing Manager",title:"Identify via drhorton.com",phone:"",email:"",linkedin:""}],address:"Atlanta Georgia Division — find at drhorton.com",website:"drhorton.com"},
-  {p:33,name:"Smith Douglas Homes",type:"Volume",zone:"South / Newnan / Hoschton",lots:1001,contacts:[{name:"Atlanta Division Purchasing Manager",title:"Corporate",phone:"",email:"",linkedin:""}],address:"~30 communities metro-wide — smithdouglas.com",website:"smithdouglas.com"},
-];
-
-// Angle & Action — source: Expanded Builder Quadrant List (June 2026)
-const BUILDER_ANGLE={
-  1:'Highest avg price on the list at $4.15M. 3 under construction, 22 pipeline lots. At this price, the 5-year services plan is EXPECTED by buyers — not a perk. The 10-year workmanship warranty is a baseline requirement. A/V integration team coordinates on every home; be ready to discuss rooftop infrastructure.',
-  2:'Second largest Atlanta builder by closings. They operate design studios — GAF architectural shingle lines matter more here than at other volume builders. 1,752 pipeline lots means one approved-vendor status unlocks a massive recurring block. The 5-year services plan is a real buyer closing differentiator their design studio can co-market as a premium included feature. 190 starts per quarter = ongoing revenue once you\'re on the list.',
-  3:'$1.8M average, 4 under construction, 19 pipeline lots — not on anyone\'s radar yet. Early relationship = first sub on a growing luxury pipeline. 19 lots means the 5-year services plan creates significant recurring service revenue. The two-warranty story (GAF 50-yr + Aidan\'s 10-yr workmanship) is the pitch that opens this door.',
-  4:'Currently building CLAXTON — Milton\'s newest exclusive community. 4,800–6,000 sq ft, pools, 3-car garages. Their trade list is actively forming — best timing window on this list. At $1.9M+, the 5-year services plan is what buyers expect at closing. Outside-the-box: offer to be present at Claxton model home events as their "exterior care partner" — positions Aidan\'s inside their brand story.',
-  5:'$701K avg is the sweet spot for the 5-year services plan — move-up buyers who expect premium but don\'t always see exterior care bundled at closing. Green Brick builds under multiple brands including Trophy Signature Homes ($700K+). 451 pipeline lots + 61 starts per quarter = major recurring revenue once on the list. For Trophy homes, position the 5-year services plan as part of the "Trophy experience" — a co-branded exterior care program that justifies the premium price point.',
-  6:'30-year reputation, 11 pipeline lots. His existing trade relationships are aging — that\'s the opening. Don\'t pitch; connect as a peer. The 5-year services plan and 11 future lots become the conversation once trust is there.',
-  7:'Documented process is the only language Jeff Wertz speaks. Mason Meadows controls access to Jeff. The 5-year services plan is a process story here — zero callbacks, scheduled maintenance, documented delivery.',
-  8:'The overlap between luxury and volume at $913K avg — 5-year services plan and 10-year workmanship warranty are expected at this price. Crossing at Coal Mountain in Cumming just opened March 2026 — trade list actively forming right now. With 33 Atlanta-area communities and 1,836 pipeline lots, landing on their approved list is a division-wide recurring block. Toll Brothers has a formal Trade Partner program — apply as a Trade Partner candidate, not just another sub bidding.',
-  9:'Waterfront at Arden on Lanier = faster grime + algae = annual pressure washing in the 5-year services plan is preventive maintenance, not a callback. Governors Towne Club has ARB standards — the services plan is an ARB compliance story. 19 pipeline lots at Maison at Hollyberry. Know their communities before you walk in.',
-  10:'Family succession in progress — Pete Brown is your long-term relationship. ARB communities (The Manor, Royal Lakes) require ongoing exterior compliance. The 5-year services plan is an ARB compliance story for these communities. Pete is building his own reputation — position Aidan\'s as the partner he brings in to modernize the sub list.',
-  11:'$1.33M average, 5 under construction, 38 pipeline lots — largest lot pipeline in this quadrant. Block booking across that pipeline is the lead pitch. The 5-year services plan at $1.3M hits the sweet spot: buyers at this price expect it but rarely see it bundled at closing.',
-  12:'Pulte\'s geographic footprint (Alpharetta + Woodstock) overlaps perfectly with Day 1A and Day 2. 1,411 pipeline lots means one approved-vendor approval unlocks a very large recurring block. Pulte buyers are move-up families — the 5-year services plan is a real differentiator: "Your Pulte home includes 5 years of exterior care." Fastest path: superintendent introductions on active Woodstock communities.',
-  13:'Top 10 Atlanta, privately held, GAHBA member. Cherokee/Cobb/Paulding focus = direct overlap with Day 2. Private company means real conversations with decision-makers. The 5-year services plan at $516K is a genuine differentiator — buyers moving into a new Cherokee County home haven\'t seen this before. Outside-the-box: offer to be their exclusive preferred roofer in Cherokee and Cobb.',
-  14:'33 starts per quarter with 39 active UC = one of the most actively building companies on this entire list by start rate. $845K avg hits the 5-year services plan sweet spot perfectly. Their territory overlaps Day 1B and Day 2 routes. At 33 starts/quarter, they need reliable subs — lead with your reliability track record + documented process.',
-  15:'30 years on word-of-mouth alone. 5 under construction across 4 counties. His sub list is short and extremely sticky once you\'re on it. The 5-year services plan eliminates his most common callback — annual gutter cleaning — while making his homes look better for longer, protecting the reputation that is his entire business model.',
-  16:'$1.73M average, 3 active roofs — not on most subs\' radar yet. Early relationship means getting in before the list is locked. At $1.73M, the 5-year services plan matches buyer expectation and gives the builder a differentiator for their sales collateral.',
-  17:'55+ community at Serenity. The 5-year services plan is a sales tool Burke should put in his model home brochure — 55+ buyers rank low-maintenance exterior as their #1 purchase driver. It goes in the SALES CONVERSATION, not the disclosure packet. Outside-the-box: offer to pilot it as a co-branded "Serenity Home Care Plan."',
-  18:'EarthCraft certification requires roofing and ventilation coordination — a roofer who doesn\'t know those specs can fail the inspection. Annual gutter maintenance in the 5-year services plan is required to maintain EarthCraft envelope performance. Technical conversation, not a pitch.',
-  19:'Metro Atlanta\'s leading luxury custom builder by reputation. Active lots at The Manor Golf & Country Club where ARB standards are non-negotiable. NAHB finalist status means craft-consciousness is their identity. At $3M+, the 5-year services plan is table stakes. Position it as protecting their 2025 Luxury Lifestyle Award reputation — "Every Loudermilk home looks like the day it was built, five years later."',
-  20:'Their brand promise explicitly states "above-and-beyond energy efficiency and warranty commitment" — that language is your pitch on a silver platter. Aidan\'s two-warranty package is the physical proof of their own brand claim. Outside-the-box: bring a printout of their own website language and show how the 5-year services plan and 10-year workmanship warranty are the tangible deliverables behind their marketing promise.',
-  21:'At $761K avg, David Weekley buyers are premium move-up — exactly the demographic where the 5-year services plan lands hardest. 610 pipeline lots = significant block booking potential. David Weekley promotes warranty programs heavily in their marketing — our 10-year workmanship warranty and 5-year services plan aligns with their existing brand language. 48 starts per quarter means active communities to walk.',
-  22:'At $1.89M, the 5-year services plan is what buyers have already researched and expect — it\'s a confirmation, not a surprise. Premium personal relationship built on trust first. Don\'t lead with price.',
-  23:'100% referral business + EarthCraft certified. The 5-year services plan is a reputation protection story: every Crownline home looks like the referral that sold it — 5 years later. Know the EarthCraft spec before approaching Michael Sakoutis.',
-  24:'$400K to $4M range across 35 years — they need a sub who holds quality consistent at both ends. At the $4M end, the 5-year services plan and 10-year workmanship warranty are expected. Demonstrating range gets you on the list.',
-  25:'Full design-build practice — Finn has seen every pitch. He\'s looking for someone who understands spec intent. The 5-year services plan extends the client experience past closing and protects the quality story he\'s spent a career building.',
-  26:'Block booking across 3 Cresswind communities + the 5-year services plan as the primary buyer sales tool. Cresswind\'s 55+ buyers rank low-maintenance exterior as their #1 purchase driver. Dawson Springs (785 homes, 2027) is building its trade list RIGHT NOW. Outside-the-box: propose a co-branded "Cresswind Home Care Program" — Kolter can advertise it across all three communities as a Cresswind standard.',
-  27:'Private company = purchasing decisions are made more personally — far more accessible than the national builders. 138 starts per quarter, 738 pipeline lots. At $327K avg, the 5-year services plan is a genuine differentiator buyers at this price rarely see bundled at closing. Lead with how the 5-year services plan reduces callbacks AND improves their reviews/referrals — that\'s a business case, not just a pitch.',
-  28:'4,000+ homes. Atlanta Magazine\'s Best Home Builder. Their communities (Delmont in Buckhead, Voysey in Downtown Alpharetta, Summerhill in Atlanta) are walkable and highly photographed. The 5-year services plan isn\'t maintenance — it\'s brand protection: one unkempt home in a Hedgewood neighborhood undercuts the award-winning brand they\'ve spent decades building.',
-  29:'7 closings at $1.49M. Build Partners structure may mean one relationship opens multiple projects simultaneously. The 5-year services plan fits the luxury buyer demographic. Research the structure on LinkedIn before calling.',
-  30:'$1.14M avg with 24 closings puts Bercher in luxury territory with real volume. At $1.14M, buyers absolutely expect the 5-year services plan and 10-year workmanship warranty. Bercher is on the cusp between luxury custom and volume — more approachable than pure luxury builders while still responding to the quality story.',
-  31:'ICF construction + rooftop decks = different technical conversation. Buyers are athletes, entertainers, C-suite — the 5-year services plan is part of the lifestyle. Patrick made an unconventional career pivot himself; your origin story will land here once technical credibility is established.',
-  32:'The biggest volume in the market. Getting on D.R. Horton\'s approved list is the largest single revenue unlock on this list — but it\'s a 6–12 month process. Differentiator: GAF Certified + zero-callback track record + 10-year workmanship warranty (fewer post-close calls = real dollar savings they track per division). One superintendent advocate moves you from unknown to approved faster than any corporate form.',
-  33:'~30 active communities across Greater Atlanta. At $359K, buyers do not expect a 5-year exterior services plan bundled at closing — it is an unprecedented differentiator Smith Douglas can put in their ads. Outside-the-box: offer to help them write the line: "Every Smith Douglas home includes 5 years of exterior care — gutters, pressure washing, and windows, covered." New Fall 2026 communities are building trade lists now.'
-};
-
-const BUILDER_ACTION={
-  1:'Find Christopher Perry at GAHBA or NAHB. Premium conversation only — lead with GAF architectural shingle line + 10-year workmanship warranty. Layer in the 5-year services plan as the expected closing deliverable at $4M+.',
-  2:'Submit vendor inquiry at ashtonwoods.com/contact-us. Call (770) 481-2000 — ask for Purchasing. Walk one active Alpharetta or Cumming community TODAY and introduce yourself to the super. Lead with GAF Certified + 10-year workmanship warranty + 5-year services plan as a buyer closing tool.',
-  3:'Call or visit the office. Identify principal on LinkedIn. Lead with the two-warranty story + 5-year services plan as a buyer differentiator. 4 active roofs is an immediate conversation — get in before the list locks at 19 lots.',
-  4:'Contact via verticalluxury.com/contact this week. Drive the Claxton site on Hopewell Rd and introduce yourself to the super on-site. Lead with two-warranty story + 5-year services plan. Trade list is actively forming — timing is now.',
-  5:'Visit greenbrickpartners.com and trophysignaturehomes.com. Find the Atlanta Division purchasing contact. Walk an active Trophy brand community in North Atlanta — overlaps your Day 1 route. Lead with GAF Certified + 5-year services plan as a Trophy buyer experience differentiator.',
-  6:'Find Tommy at GAHBA. One real conversation — don\'t pitch. Connect as a peer. The 11 lots + the 5-year services plan become the story when the timing is right.',
-  7:'Find Mason Meadows at GAHBA. Lead with documented process and zero callbacks. Get Mason before you get to Jeff.',
-  8:'Call (888) 686-5542 — ask for Atlanta Division purchasing. Visit the Crossing at Coal Mountain site in Cumming — new community, trade list not locked. Introduce yourself to the super and construction manager. Frame yourself as a Trade Partner candidate. Lead with GAF Certified + two-warranty story + 5-year services plan.',
-  9:'Email info@elevationbuildingco.com referencing Arden on Lanier waterfront specs. Lead with the 5-year services plan as an ARB compliance tool. Ask about roofing coordination for Maison at Hollyberry. Request a 20-minute meeting.',
-  10:'Find Tony at GAHBA. Get introduced to Pete. Build with Pete over time. 5-year services plan = ARB compliance angle for The Manor and Royal Lakes.',
-  11:'Call (770) 973-5685 or stop by the Woodstock office. Identify principal via LinkedIn. Lead with block booking across the 38-lot pipeline + 5-year services plan as a buyer closing tool.',
-  12:'Call 2475 Northwinds Pkwy Alpharetta — ask for Purchasing or Construction Manager. On Day 2 route, stop at any active Pulte Woodstock community and introduce yourself to the super. Lead with GAF Certified + 5-year services plan as a buyer differentiator.',
-  13:'Find Traton at GAHBA events — they\'re consistent attendees. Visit tratonhomes.com to identify active communities. On your Day 2 route, stop by any active Traton community. Offer exclusivity in Cherokee/Cobb as a conversation starter.',
-  14:'Visit patrickmalloy.com to identify active communities. Drive an active community on your Day 2 route and introduce yourself to the super. Find the principal on LinkedIn. Lead with reliability + GAF Certified + 5-year services plan as a buyer differentiator at the $845K price point.',
-  15:'Find Joey Hipps at GAHBA events specifically. Come as a peer, not a vendor. Lead with reliability + zero callbacks. Mention the 5-year services plan only after trust is established — frame it as protecting the reputation he\'s spent 30 years building.',
-  16:'Call (678) 523-5997 or visit the Marietta office. Identify principal via LinkedIn. Lead with the two-warranty story + 5-year services plan. 3 active roofs is an immediate conversation.',
-  17:'Find Burke Jackson at GAHBA. Lead with the 5-year services plan as a 55+ buyer sales tool. Offer to pilot it at Serenity as a co-branded program. Warranty transfer story seals it.',
-  18:'LinkedIn outreach to Chris Spencer. Lead with EarthCraft ventilation and envelope knowledge. Come with substance — they are engineers. 5-year services plan follows once technical credibility is established.',
-  19:'Call (770) 485-2600 or email info@loudermilkhomes.com. Find principal at NAHB (2024 finalist). Lead with GAF architectural shingle line + 10-year workmanship warranty. Never lead with price.',
-  20:'Visit theprovidencegroup.com. Identify the construction or purchasing contact for single-family division. Stop by their Johns Creek office. Open with energy efficiency specs. The 5-year services plan follows as the buyer-facing proof of their brand promise.',
-  21:'Visit davidweekley.com to identify active Atlanta communities. Contact Atlanta Division purchasing. Walk an active community and meet the super. Lead with GAF Certified + 10-year workmanship warranty + 5-year services plan matching their own quality-and-care brand story.',
-  22:'Call (770) 844-9976 or stop by the Dunwoody office. Lead with the 5-year services plan as an expected buyer deliverable at $1.9M. Ask for 20 minutes with Ty White personally.',
-  23:'Call (770) 858-5113 or stop by. Lead with EarthCraft ventilation knowledge. Get to Michael Sakoutis. Frame the 5-year services plan as protecting the referral reputation that is their entire business model.',
-  24:'Call (770) 642-8272 or stop by. Verify GAHBA membership first. Lead with range — quality at both ends. The 5-year services plan is your trophy-end differentiator.',
-  25:'Find Finn at GAHBA or NAHB. Lead with design-stage coordination knowledge. The 5-year services plan and 10-year workmanship warranty are your closing story once design-stage credibility is established — not before.',
-  26:'Call (470) 604-7302 or visit the Buckhead office. Find Tony Adams at GAHBA/NAHB. Ask specifically about the Dawson Springs trade list — that is the opening. Request intro to Joe Hawkins. Lead with the 5-year services plan as a Cresswind buyer program, not a roofing pitch.',
-  27:'Call (470) 645-0128 — ask for purchasing or construction contact. Research leadership on theorg.com/org/rockhaven-homes. Find active communities on rockhavenga.com — 168 under construction means active sites to walk. Lead with GAF Certified + zero-callback track record + 5-year services plan.',
-  28:'Find Pam Sessions or Don Donnelly at GAHBA. Reference Delmont, Voysey, and Summerhill specifically. Lead with the 5-year services plan as brand protection for their walkable, highly visible neighborhoods.',
-  29:'Call (404) 488-2431. Research company structure on LinkedIn — identify who controls sub relationships. Reach out with block booking + 5-year services plan combo.',
-  30:'Research bercherhomes.com to identify geography and active communities. Find owner/principal on LinkedIn. Lead with the two-warranty story + 5-year services plan. 9 active UC = immediate conversation once geography is confirmed.',
-  31:'LinkedIn outreach to Patrick Henderson. Lead with ICF envelope knowledge — he will know if you can\'t articulate it. Your pivot story + 5-year services plan are your bridge once technical credibility is established.',
-  32:'Find the Atlanta Division office via drhorton.com and call — ask about roofing vendor qualification. Walk any active D.R. Horton community in the South corridor and introduce yourself to the super. Ask if the approved list has openings. This is a marathon — start super relationships now.',
-  33:'Visit smithdouglas.com/find-a-home. Drive to the nearest active community and meet the superintendent. Simultaneously call the Atlanta division office and ask for Purchasing. Lead with GAF Certified + 5-year services plan as a buyer marketing differentiator.'
-};
-
-// Zonda data — source: ATL.xlsx
-const ZONDA_LOTS={2:1752,5:451,8:1836,12:1411,13:276,14:113,21:610,26:155,27:738,32:4804,33:1001};
-const ZONDA_PRICE={1:4149615,2:401312,5:701465,8:912992,12:586878,13:516416,14:845246,21:761046,26:1421787,27:326859,32:428442,33:358671};
-const ZONDA_SQFT={1:6033,2:2010,5:2392,8:3199,12:2507,13:2195,14:3963,21:2804,26:2162,27:2015,32:2442,33:2102};
-
 const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"visited",label:"Site visited"},{val:"meeting",label:"Meeting set"},{val:"approved",label:"Approved vendor"}];
 const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",visited:"Site visited",meeting:"Meeting set",approved:"Approved vendor"};
 const LB_CLASS={none:"lb-none",contacted:"lb-contacted",visited:"lb-visited",meeting:"lb-meeting",approved:"lb-approved"};
+const CAT_CLASS={Builder:"badge-builder",Supplier:"badge-supplier",Architect:"badge-architect",Realtor:"badge-realtor",Other:"badge-other"};
 const REP_COLORS=[{bg:"#E6F1FB",color:"#0C447C"},{bg:"#E1F5EE",color:"#085041"},{bg:"#EEEDFE",color:"#3C3489"},{bg:"#FAEEDA",color:"#633806"},{bg:"#FAECE7",color:"#712B13"},{bg:"#FBEAF0",color:"#72243E"},{bg:"#EAF3DE",color:"#27500A"},{bg:"#F1EFE8",color:"#444441"}];
 
 function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
 function repColor(i){return REP_COLORS[i%REP_COLORS.length];}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
 /* ── Note log helpers ── */
 function parseNotes(str){
@@ -395,188 +372,131 @@ function renderLogHtml(entries,appendCmd,delCmd){
   const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="${delCmd.replace('IDX',i)}" title="Delete entry">×</button></div>`).join('');
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){${appendCmd};}"/></div></div>`;
 }
-function deleteNote(p,field,idx){
-  const log=getLog(p);const entries=parseNotes(log[field]);
+function deleteContactNote(id,field,idx){
+  const c=getC(id);const entries=parseNotes(c[field]);
   entries.splice(idx,1);
-  log[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
-  queueSaveLog(p);render();
+  c[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
+  queueSave(id);render();
 }
-function appendNote(p,inputEl,field){
+const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:'background:#C0392B;color:#fff;font-weight:700;',med:'background:#F9E04B;color:#5a4a00;font-weight:600;',low:'background:#bbb;color:#fff;font-weight:600;'};
+function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
+function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);}
+function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
+function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
-  const log=getLog(p);
+  const c=getC(id);
   const entry=`[${fmtNoteTs()}] ${text}`;
-  log[field]=log[field]?log[field]+'\n'+entry:entry;
-  if(['emailNote','liNote','siteVisitNote','notes'].includes(field))log.lastActivity=new Date().toISOString();
+  c[field]=c[field]?c[field]+'\n'+entry:entry;
+  if(['emailNote','liNote','siteVisitNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
   inputEl.value='';
-  queueSaveLog(p);
-  if(field==='notes')addAct(getB(p).name,'notes',text,log.rep);
-  else if(field==='emailNote')addAct(getB(p).name,'emailNote',text,log.rep);
-  else if(field==='liNote')addAct(getB(p).name,'liNote',text,log.rep);
-  else if(field==='siteVisitNote')addAct(getB(p).name,'siteVisitNote',text,log.rep);
+  queueSave(id);
+  if(field==='notes')addAct(c.company,'notes',text,c.rep);
+  else if(field==='emailNote')addAct(c.company,'emailNote',text,c.rep);
+  else if(field==='liNote')addAct(c.company,'liNote',text,c.rep);
+  else if(field==='siteVisitNote')addAct(c.company,'siteVisitNote',text,c.rep);
   render();
 }
 
-let builders=JSON.parse(JSON.stringify(DEFAULT_BUILDERS));
-let logs={};
-let activity=[];
+let contacts=[];
 let reps=["David McLendon"];
+let activity=[];
 let saveQueue={};
 let saveTimer=null;
+let editingId=null;
 
 function setSyncStatus(s){
   const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-label');
   dot.className='sync-dot '+s;
   lbl.textContent=s==='ok'?'Live — changes saved':s==='saving'?'Saving…':'Save error — check connection';
 }
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
-
-async function apiFetch(params){
-  const res=await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));
-  return res.json();
-}
-async function apiPost(body){
-  const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});
-  return res.json();
-}
+async function apiFetch(params){const res=await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));return res.json();}
+async function apiPost(body){const res=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});return res.json();}
 
 async function loadAll(){
   try{
-    const data=await apiFetch({action:'getAll'});
-    if(data.error)throw new Error(data.error);
-    if(data.logs)Object.entries(data.logs).forEach(([k,v])=>{logs[k]=v;});
-    if(data.activity&&data.activity.length)activity=data.activity;
+    const data=await apiFetch({action:'getNewContacts'});
+    if(data.contacts)contacts=data.contacts;
     if(data.reps&&data.reps.length)reps=data.reps;
-    if(data.contacts){
-      Object.entries(data.contacts).forEach(([bid,contacts])=>{
-        const b=builders.find(x=>String(x.p)===String(bid));
-        if(b&&contacts&&contacts.filter(Boolean).length)b.contacts=contacts.filter(Boolean);
-      });
-    }
-    if(data.builderInfo){
-      Object.entries(data.builderInfo).forEach(([bid,info])=>{
-        const b=builders.find(x=>String(x.p)===String(bid));
-        if(b){if(info.name)b.name=info.name;if(info.address)b.address=info.address;if(info.website!==undefined)b.website=info.website;if(info.lots!==undefined)b.lots=info.lots===''?null:info.lots;}
-      });
-    }
+    if(data.activity&&data.activity.length)activity=data.activity;
     setSyncStatus('ok');
   }catch(e){
     setSyncStatus('error');showToast('Could not connect — working offline');
   }
-  // Seed baseline priorities from Expanded Builder Quadrant List
-  const BASELINE_PRIORITY={
-    4:'now',   // Vertical Luxury — trade list actively forming, timing is NOW
-    8:'now',   // Toll Brothers — trade list forming in your territory right now
-    26:'now',  // Kolter — Dawson Springs trade list building RIGHT NOW
-    1:'high',  // Perry Custom — 3 active roofs, immediate conversation
-    2:'high',  // Ashton Woods — HIGH block booking, biggest pipeline in zone
-    5:'high',  // Green Brick — HIGH block booking, 451 lots
-    12:'high', // Pulte — HIGH block booking, 1,411 lots
-    14:'high', // Patrick Malloy — most active by start rate in zone
-    21:'high', // David Weekley — HIGH block booking, 610 lots
-    27:'high', // Rockhaven — STRONG, 738 lots, private = accessible
-    32:'high', // D.R. Horton — HIGH block booking (marathon play)
-    33:'high', // Smith Douglas — HIGH, new Fall 2026 communities now
-    3:'med',   // Arkan — MODERATE, 4 active roofs
-    9:'med',   // Elevation — STRONG, 19 lots, ARB angle
-    11:'med',  // Cotton States — STRONG, 38 lots, largest luxury pipeline
-    13:'med',  // Traton — STRONG, GAHBA member, Cherokee overlap
-    15:'med',  // Epic Homes — STRONG, sticky sub list
-    16:'med',  // Navkar — MODERATE, 3 active roofs
-    17:'med',  // Treetop — MODERATE, 55+ perfect fit
-    18:'med',  // Spencer Love — MODERATE, EarthCraft angle
-    19:'med',  // Loudermilk — MODERATE, highest prestige in quadrant
-    20:'med',  // Providence Group — STRONG, brand language fit
-    22:'med',  // Peachland — MODERATE, 4 active
-    28:'med',  // Hedgewood — STRONG, brand protection angle
-    29:'med',  // South Haven — MODERATE
-    30:'med',  // Bercher — STRONG, 9 UC, luxury-adjacent
-    6:'low',   // Fuqua — FUTURE, seed relationship
-    7:'low',   // Whitestone — FUTURE, earn PM first
-    10:'low',  // Tony Brown — FUTURE, succession in play
-    23:'low',  // Crownline — FUTURE, 100% referral
-    24:'low',  // Capital Design — FUTURE, 35 years
-    25:'low',  // White Oak — FUTURE, design-stage credibility first
-    31:'low',  // PLH Homes — FUTURE, ICF technical credibility first
-  };
-  builders.forEach(b=>{
-    const log=getLog(b.p);
-    if(!log.priority&&BASELINE_PRIORITY[b.p]){log.priority=BASELINE_PRIORITY[b.p];queueSaveLog(b.p);}
-  });
-  // Seed Angle & Action from constants if not yet saved to Sheet
-  builders.forEach(b=>{
-    const log=getLog(b.p);
-    if(!log.angle&&BUILDER_ANGLE[b.p]){log.angle=BUILDER_ANGLE[b.p];queueSaveLog(b.p);}
-    if(!log.action&&BUILDER_ACTION[b.p]){log.action=BUILDER_ACTION[b.p];queueSaveLog(b.p);}
-  });
-  // Sync Zonda lot counts — overrides any stale Sheet values
-  Object.entries(ZONDA_LOTS).forEach(([p,lots])=>{
-    const b=builders.find(x=>x.p===parseInt(p));
-    if(b&&b.lots!==lots){b.lots=lots;apiPost({action:'saveBuilderInfo',data:{builderId:parseInt(p),name:b.name,address:b.address,website:b.website,lots}}).catch(()=>{});}
-  });
   // Backfill Jun 3 2026 for any existing entries that have outreach/visit data but no lastActivity
-  builders.forEach(b=>{
-    const log=getLog(b.p);
-    if(!log.lastActivity&&(log.emailNote||log.liNote||log.siteVisitNote||log.notes)){
-      log.lastActivity=new Date(2026,5,3,12,0,0).toISOString();
-      queueSaveLog(b.p);
+  contacts.forEach(c=>{
+    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.siteVisitNote||c.notes)){
+      c.lastActivity=new Date(2026,5,3,12,0,0).toISOString();
+      queueSave(c.id);
     }
   });
   document.getElementById('loading').style.display='none';
   render();updateStats();populateRepFilter();
 }
 
-function getLog(p){if(!logs[p])logs[p]={status:'none',date:'',notes:'',rep:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',angle:'',action:'',priority:''};return logs[p];}
-const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:'background:#C0392B;color:#fff;font-weight:700;',med:'background:#F9E04B;color:#5a4a00;font-weight:600;',low:'background:#bbb;color:#fff;font-weight:600;'};
-function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
-function setPriority(p,val,sel){getLog(p).priority=val;sel.style.cssText=priorityStyle(val);queueSaveLog(p);}
-function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}
-}
-function autosizeAll(){document.querySelectorAll('textarea.ei').forEach(el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';});}
-function getB(p){return builders.find(b=>b.p===p);}
+function getC(id){return contacts.find(c=>c.id===id);}
+
 function nowStr(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 function todayStr(){return new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
 function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
-function queueSaveLog(p){
-  setSyncStatus('saving');clearTimeout(saveTimer);saveQueue[p]=true;
+function queueSave(id){
+  setSyncStatus('saving');clearTimeout(saveTimer);saveQueue[id]=true;
   saveTimer=setTimeout(async()=>{
     const ids=Object.keys(saveQueue);saveQueue={};
-    for(const id of ids){try{await apiPost({action:'saveLog',data:{builderId:id,...getLog(parseInt(id))}});}catch(e){}}
+    for(const i of ids){
+      const c=getC(i);if(!c)continue;
+      try{await apiPost({action:'saveNewContact',data:c});}catch(e){}
+    }
     setSyncStatus('ok');
   },800);
 }
 
-function addAct(builderName,field,newVal,rep){
-  const msgs={status:`Status updated: <strong>${builderName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date set: <strong>${builderName}</strong> — ${newVal}`,notes:`Note: <strong>${builderName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${builderName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach logged: <strong>${builderName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${builderName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach logged: <strong>${builderName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${builderName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${builderName}</strong> — "${newVal}"`,address:`Address updated: <strong>${builderName}</strong>`,website:`Website updated: <strong>${builderName}</strong> — ${newVal}`};
-  const entry={ts:nowStr(),day:todayKey(),dayLabel:todayStr(),msg:msgs[field]||`Updated: <strong>${builderName}</strong>`,field,status:field==='status'?newVal:null,builder:builderName,rep:rep||''};
+function addAct(companyName,field,newVal,rep){
+  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
+  const entry={ts:nowStr(),day:todayKey(),dayLabel:todayStr(),msg:msgs[field]||`Updated: <strong>${companyName}</strong>`,field,status:field==='status'?newVal:null,builder:companyName,rep:rep||''};
   activity.push(entry);
   apiPost({action:'saveActivity',data:entry}).catch(()=>{});
 }
 
-function setStatus(p,v){const old=getLog(p).status;getLog(p).status=v;queueSaveLog(p);addAct(getB(p).name,'status',v,getLog(p).rep);}
-function setDate(p,v){getLog(p).date=v;queueSaveLog(p);addAct(getB(p).name,'date',v,getLog(p).rep);}
-function setRep(p,v){getLog(p).rep=v;queueSaveLog(p);addAct(getB(p).name,'rep',v,v);render();}
-function setEmailDate(p,v){getLog(p).emailDate=v;queueSaveLog(p);if(v)addAct(getB(p).name,'emailDate',v,getLog(p).rep);render();}
-function setLiDate(p,v){getLog(p).liDate=v;queueSaveLog(p);if(v)addAct(getB(p).name,'liDate',v,getLog(p).rep);render();}
-
-function setContactField(p,ci,field,v){
-  const b=getB(p);const old=b.contacts[ci][field]||'';b.contacts[ci][field]=v;
-  if(v.trim()!==old.trim())addAct(b.name,'contact',`${field}: ${v}`,getLog(p).rep);
-  setSyncStatus('saving');
-  apiPost({action:'saveContacts',data:{builderId:p,contacts:b.contacts}}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
+function setField(id,field,v){
+  const c=getC(id);if(!c)return;
+  const old=c[field];c[field]=v;
+  if(v!==old&&v.toString().trim())addAct(c.company,field,v,c.rep);
+  queueSave(id);
 }
-function addContact(p){getB(p).contacts.push({name:'',title:'',phone:'',email:'',linkedin:''});render();setTimeout(()=>{const rows=document.querySelectorAll(`[data-cr="${p}"]`);if(rows.length){const inp=rows[rows.length-1].querySelector('input');if(inp)inp.focus();}},50);}
-function removeContact(p,ci){const b=getB(p);if(b.contacts.length<=1){showToast('At least one contact required.');return;}b.contacts.splice(ci,1);apiPost({action:'saveContacts',data:{builderId:p,contacts:b.contacts}}).catch(()=>{});render();}
-function setBuilderInfo(p,field,v){const b=getB(p);b[field]=field==='lots'?(v===''?null:parseInt(v)):v;addAct(b.name,field,v,getLog(p).rep);setSyncStatus('saving');apiPost({action:'saveBuilderInfo',data:{builderId:p,name:b.name,address:b.address,website:b.website,lots:b.lots}}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));}
+function setContactField(id,ci,field,v){
+  const c=getC(id);if(!c)return;
+  const old=(c.contacts[ci]||{})[field]||'';
+  if(!c.contacts[ci])c.contacts[ci]={};
+  c.contacts[ci][field]=v;
+  if(v.trim()!==old.trim())addAct(c.company,'contact',`${field}: ${v}`,c.rep);
+  queueSave(id);
+}
+function setStatus(id,v){setField(id,'status',v);}
+function setDate(id,v){setField(id,'visitDate',v);}
+function setRep(id,v){setField(id,'rep',v);render();}
+function setEmailDate(id,v){setField(id,'emailDate',v);render();}
+function setLiDate(id,v){setField(id,'liDate',v);render();}
+
+function addContact(id){const c=getC(id);if(!c)return;c.contacts.push({name:'',title:'',phone:'',email:'',linkedin:''});queueSave(id);render();setTimeout(()=>{const rows=document.querySelectorAll(`[data-cr="${id}"]`);if(rows.length){const inp=rows[rows.length-1].querySelector('input');if(inp)inp.focus();}},50);}
+function removeContact(id,ci){const c=getC(id);if(!c||c.contacts.length<=1){showToast('At least one contact required.');return;}c.contacts.splice(ci,1);queueSave(id);render();}
+
+function deleteContact(id){
+  const c=getC(id);if(!c)return;
+  if(!confirm(`Delete ${c.company}? This cannot be undone.`))return;
+  contacts=contacts.filter(x=>x.id!==id);
+  apiPost({action:'deleteNewContact',data:{id}}).catch(()=>{});
+  render();updateStats();showToast(`${c.company} deleted.`);
+}
 
 function updateStats(){
-  document.getElementById('s-none').textContent=builders.filter(b=>getLog(b.p).status==='none').length;
-  document.getElementById('s-prog').textContent=builders.filter(b=>['contacted','visited'].includes(getLog(b.p).status)).length;
-  document.getElementById('s-done').textContent=builders.filter(b=>['meeting','approved'].includes(getLog(b.p).status)).length;
+  const n=contacts.length;
+  document.getElementById('s-total').textContent=n;
+  document.getElementById('s-none').textContent=contacts.filter(c=>c.status==='none'||!c.status).length;
+  document.getElementById('s-prog').textContent=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  document.getElementById('s-done').textContent=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
 }
 
 function populateRepFilter(){
@@ -589,117 +509,158 @@ function repPill(rep){
   return`<span class="rep-pill" style="background:${c.bg};color:${c.color};"><span style="width:14px;height:14px;border-radius:50%;background:${c.color};color:${c.bg};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;">${initials(rep)}</span>${rep.split(' ')[0]}</span>`;
 }
 
-function renderContactsCell(b){
+function renderContactsCell(c){
   let html='';
-  b.contacts.forEach((c,ci)=>{
-    html+=`<div class="contact-row" data-cr="${b.p}">
-      <button class="del-btn" onclick="removeContact(${b.p},${ci})">×</button>
-      <input class="ei" value="${esc(c.name)}" placeholder="Full name" onblur="setContactField(${b.p},${ci},'name',this.value)" style="font-weight:600;"/>
-      <input class="ei" value="${esc(c.title)}" placeholder="Title / role" onblur="setContactField(${b.p},${ci},'title',this.value)" style="color:#888;"/>
-      <input class="ei" value="${esc(c.phone)}" placeholder="Phone" onblur="setContactField(${b.p},${ci},'phone',this.value)"/>
-      <input class="ei" value="${esc(c.email)}" placeholder="Email" onblur="setContactField(${b.p},${ci},'email',this.value)"/>
-      <input class="ei" value="${esc(c.linkedin)}" placeholder="LinkedIn / note" onblur="setContactField(${b.p},${ci},'linkedin',this.value)"/>
+  (c.contacts||[]).forEach((ct,ci)=>{
+    html+=`<div class="contact-row" data-cr="${c.id}">
+      <button class="del-btn" onclick="removeContact('${c.id}',${ci})">×</button>
+      <input class="ei" value="${esc(ct.name)}" placeholder="Full name" onblur="setContactField('${c.id}',${ci},'name',this.value)" style="font-weight:600;"/>
+      <input class="ei" value="${esc(ct.title)}" placeholder="Title / role" onblur="setContactField('${c.id}',${ci},'title',this.value)" style="color:#888;"/>
+      <input class="ei" value="${esc(ct.phone)}" placeholder="Phone" onblur="setContactField('${c.id}',${ci},'phone',this.value)"/>
+      <input class="ei" value="${esc(ct.email)}" placeholder="Email" onblur="setContactField('${c.id}',${ci},'email',this.value)"/>
+      <input class="ei" value="${esc(ct.linkedin)}" placeholder="LinkedIn / note" onblur="setContactField('${c.id}',${ci},'linkedin',this.value)"/>
     </div>`;
   });
-  html+=`<button class="add-contact-btn" onclick="addContact(${b.p})"><i class="ti ti-plus" style="font-size:11px;"></i> Add contact</button>`;
+  html+=`<button class="add-contact-btn" onclick="addContact('${c.id}')"><i class="ti ti-plus" style="font-size:11px;"></i> Add contact</button>`;
   return html;
 }
 
 function fmtDisplayDate(iso){if(!iso)return'';try{const[y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d);if(isNaN(dt.getTime()))return iso;return dt.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});}catch(e){return iso;}}
-function renderOutreachCell(p,type){
-  const log=getLog(p);
-  const dateVal=type==='email'?log.emailDate:log.liDate;
-  const noteVal=type==='email'?log.emailNote:log.liNote;
+function renderOutreachCell(c,type){
+  const dateVal=type==='email'?c.emailDate:c.liDate;
+  const noteVal=type==='email'?c.emailNote:c.liNote;
   const field=type==='email'?'emailNote':'liNote';
-  const dateField=type==='email'?'emailDate':'liDate';
   const sentLabel=type==='email'?'Email sent':'LinkedIn connected';
-  const onDateChange=type==='email'?`setEmailDate(${p},this.value)`:`setLiDate(${p},this.value)`;
+  const onDateChange=type==='email'?`setEmailDate('${c.id}',this.value)`:`setLiDate('${c.id}',this.value)`;
   const noteEntries=parseNotes(noteVal);
   let rows='';
-  rows+=noteEntries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteNote(${p},'${field}',${i})" title="Delete entry">×</button></div>`).join('');
-  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendNote(${p},this,'${field}');}"/></div></div>`;
+  rows+=noteEntries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteContactNote('${c.id}','${field}',${i})" title="Delete entry">×</button></div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'${field}');}"/></div></div>`;
 }
 
 function render(){
   const search=document.getElementById('search').value.toLowerCase();
-  const fz=document.getElementById('f-zone').value;
-  const ft=document.getElementById('f-type').value;
+  const fcat=document.getElementById('f-cat').value;
   const fs=document.getElementById('f-status').value;
   const fp=document.getElementById('f-priority').value;
   const fr=document.getElementById('f-rep').value;
-  const filtered=builders.filter(b=>{
-    const log=getLog(b.p);
-    if(fz&&b.zone!==fz)return false;
-    if(ft&&b.type!==ft)return false;
-    if(fs&&log.status!==fs)return false;
-    if(fp&&log.priority!==fp)return false;
-    if(fr==='__none__'&&log.rep)return false;
-    if(fr&&fr!=='__none__'&&log.rep!==fr)return false;
-    if(search){const hay=[b.name,b.zone,b.address,b.website,...b.contacts.map(c=>[c.name,c.email,c.phone,c.linkedin,c.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
+  const filtered=contacts.filter(c=>{
+    if(fcat&&c.category!==fcat)return false;
+    const status=c.status||'none';
+    if(fs&&status!==fs)return false;
+    if(fp&&(c.priority||'')!==fp)return false;
+    if(fr==='__none__'&&c.rep)return false;
+    if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
+    if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
     return true;
   });
-  const log_=p=>getLog(p);
-  document.getElementById('tbody').innerHTML=filtered.map(b=>{
 
-    const log=log_(b.p);
-    const statOpts=STATUS_OPTS.map(o=>`<option value="${o.val}"${log.status===o.val?' selected':''}>${o.label}</option>`).join('');
-    const repOpts=`<option value="">— Unassigned —</option>`+reps.map((r,ri)=>`<option value="${r}"${log.rep===r?' selected':''}>${r}</option>`).join('');
+  if(!filtered.length){
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
+    updateStats();return;
+  }
+
+  document.getElementById('tbody').innerHTML=filtered.map(c=>{
+    const status=c.status||'none';
+    const statOpts=STATUS_OPTS.map(o=>`<option value="${o.val}"${status===o.val?' selected':''}>${o.label}</option>`).join('');
+    const repOpts=`<option value="">— Unassigned —</option>`+reps.map((r,ri)=>`<option value="${r}"${c.rep===r?' selected':''}>${r}</option>`).join('');
+    const catClass=CAT_CLASS[c.category]||'badge-other';
     return`<tr>
-      <td class="col-freeze-1" style="color:#aaa;font-size:11px;">${b.p}</td>
-      <td class="col-freeze-2">
-        <input class="ei" value="${esc(b.name)}" placeholder="Builder name" onblur="setBuilderInfo(${b.p},'name',this.value)" style="font-weight:600;font-size:12px;"/>
-        <span class="badge ${b.type==='Luxury'?'badge-lux':'badge-vol'}" style="margin-top:3px;display:inline-block;">${b.type}</span>
+      <td class="col-freeze-1">
+        <input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/>
+        <span class="badge ${catClass}" style="margin-top:3px;display:inline-block;">${c.category||'Other'}</span>
       </td>
       <td>
-        <select class="fsel" onchange="setPriority(${b.p},this.value,this)" style="${priorityStyle(log.priority)}">
+        <select class="fsel" onchange="setPriorityContact('${c.id}',this.value,this)" style="${priorityStyle(c.priority||'')}">
           <option value="">— Priority —</option>
-          <option value="now" ${log.priority==='now'?'selected':''}>Now</option>
-          <option value="high" ${log.priority==='high'?'selected':''}>High</option>
-          <option value="med" ${log.priority==='med'?'selected':''}>Med</option>
-          <option value="low" ${log.priority==='low'?'selected':''}>Low</option>
+          <option value="now" ${(c.priority||'')==='now'?'selected':''}>Now</option>
+          <option value="high" ${(c.priority||'')==='high'?'selected':''}>High</option>
+          <option value="med" ${(c.priority||'')==='med'?'selected':''}>Med</option>
+          <option value="low" ${(c.priority||'')==='low'?'selected':''}>Low</option>
         </select>
       </td>
-      <td style="font-size:11px;color:#888;">${b.zone}</td>
-      <td>${renderContactsCell(b)}</td>
+      <td><input class="ei" value="${esc(c.zone)}" placeholder="Zone / area" onblur="setField('${c.id}','zone',this.value)" style="font-size:11px;color:#888;"/></td>
+      <td>${renderContactsCell(c)}</td>
+      <td><textarea class="ei" rows="2" placeholder="Where met" onblur="setField('${c.id}','source',this.value)" style="font-size:11px;color:#888;resize:none;word-break:break-word;">${esc(c.source)}</textarea></td>
       <td>
-        <textarea class="ei" rows="2" placeholder="Office address" onblur="setBuilderInfo(${b.p},'address',this.value)" style="margin-bottom:3px;resize:none;word-break:break-word;">${esc(b.address)}</textarea>
-        <textarea class="ei" rows="1" placeholder="Website" onblur="setBuilderInfo(${b.p},'website',this.value)" style="color:#003DA5;resize:none;word-break:break-all;">${esc(b.website)}</textarea>
+        <textarea class="ei" rows="2" placeholder="Office address" onblur="setField('${c.id}','address',this.value)" style="margin-bottom:3px;resize:none;word-break:break-word;">${esc(c.address)}</textarea>
+        <textarea class="ei" rows="1" placeholder="Website" onblur="setField('${c.id}','website',this.value)" style="color:#003DA5;resize:none;word-break:break-all;">${esc(c.website)}</textarea>
       </td>
-      <td><input class="ei" type="text" value="${b.lots===null?'':b.lots}" placeholder="—" onblur="setBuilderInfo(${b.p},'lots',this.value)" style="text-align:right;"/></td>
-      <td style="font-size:12px;text-align:right;color:#888;padding-right:14px;">${ZONDA_PRICE[b.p]!=null?'$'+ZONDA_PRICE[b.p].toLocaleString():'—'}</td>
-      <td style="font-size:12px;text-align:right;color:#888;padding-right:14px;">${ZONDA_SQFT[b.p]!=null?ZONDA_SQFT[b.p].toLocaleString():'—'}</td>
+      <td><input class="ei" type="text" value="${c.lots===null||c.lots===undefined?'':c.lots}" placeholder="—" onblur="setField('${c.id}','lots',this.value)" style="text-align:right;"/></td>
       <td>
-        ${log.rep?repPill(log.rep):'<span style="font-size:11px;color:#bbb;">— unassigned —</span>'}
-        <select class="fsel" style="margin-top:4px;" onchange="setRep(${b.p},this.value)">${repOpts}</select>
+        ${c.rep?repPill(c.rep):'<span style="font-size:11px;color:#bbb;">— unassigned —</span>'}
+        <select class="fsel" style="margin-top:4px;" onchange="setRep('${c.id}',this.value)">${repOpts}</select>
       </td>
-      <td>${renderOutreachCell(b.p,'email')}</td>
-      <td>${renderOutreachCell(b.p,'li')}</td>
-      <td>${renderLogHtml(parseNotes(log.siteVisitNote),`appendNote(${b.p},this,'siteVisitNote')`,`deleteNote(${b.p},'siteVisitNote',IDX)`)}</td>
-      <td><select class="fsel" onchange="setStatus(${b.p},this.value)">${statOpts}</select></td>
-      <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(log.lastActivity)}</td>
-      <td><textarea class="ei" placeholder="Angle…" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onblur="getLog(${b.p}).angle=this.value;queueSaveLog(${b.p})" style="resize:none;line-height:1.5;font-size:11px;overflow:hidden;">${esc(log.angle)}</textarea></td>
-      <td><textarea class="ei" placeholder="Action…" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onblur="getLog(${b.p}).action=this.value;queueSaveLog(${b.p})" style="resize:none;line-height:1.5;font-size:11px;color:#003DA5;font-weight:500;overflow:hidden;">${esc(log.action)}</textarea></td>
-      <td>${renderLogHtml(parseNotes(log.notes),`appendNote(${b.p},this,'notes')`,`deleteNote(${b.p},'notes',IDX)`)}</td>
+      <td>${renderOutreachCell(c,'email')}</td>
+      <td>${renderOutreachCell(c,'li')}</td>
+      <td>${renderLogHtml(parseNotes(c.siteVisitNote||''),`appendContactNote('${c.id}',this,'siteVisitNote')`,`deleteContactNote('${c.id}','siteVisitNote',IDX)`)}</td>
+      <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select></td>
+      <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
+      <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
+      <td>
+        <button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete contact" style="position:static;font-size:18px;color:#ddd;padding:2px;">
+          <i class="ti ti-trash" style="font-size:13px;"></i>
+        </button>
+      </td>
     </tr>`;
   }).join('');
   updateStats();
-  setTimeout(autosizeAll,0);
+}
+
+// MODAL
+function openModal(id){
+  editingId=id||null;
+  const c=id?getC(id):null;
+  document.getElementById('modal-title').textContent=c?'Edit contact':'Add new contact';
+  document.getElementById('m-company').value=c?c.company:'';
+  document.getElementById('m-category').value=c?c.category:'Builder';
+  document.getElementById('m-zone').value=c?c.zone:'';
+  document.getElementById('m-address').value=c?c.address:'';
+  document.getElementById('m-website').value=c?c.website:'';
+  document.getElementById('m-lots').value=c&&c.lots!=null?c.lots:'';
+  document.getElementById('m-source').value=c?c.source:'';
+  const ct=(c&&c.contacts&&c.contacts[0])||{};
+  document.getElementById('m-cname').value=ct.name||'';
+  document.getElementById('m-ctitle').value=ct.title||'';
+  document.getElementById('m-cphone').value=ct.phone||'';
+  document.getElementById('m-cemail').value=ct.email||'';
+  document.getElementById('m-clinkedin').value=ct.linkedin||'';
+  document.getElementById('m-notes').value=c?c.notes:'';
+  document.getElementById('modal-overlay').style.display='flex';
+  setTimeout(()=>document.getElementById('m-company').focus(),50);
+}
+function closeModal(){document.getElementById('modal-overlay').style.display='none';editingId=null;}
+function saveModal(){
+  const company=document.getElementById('m-company').value.trim();
+  if(!company){showToast('Company name is required.');document.getElementById('m-company').focus();return;}
+  const contact={name:document.getElementById('m-cname').value.trim(),title:document.getElementById('m-ctitle').value.trim(),phone:document.getElementById('m-cphone').value.trim(),email:document.getElementById('m-cemail').value.trim(),linkedin:document.getElementById('m-clinkedin').value.trim()};
+  const lotsVal=document.getElementById('m-lots').value;
+  const rawNotes=document.getElementById('m-notes').value.trim();
+  if(editingId){
+    const c=getC(editingId);
+    c.company=company;c.category=document.getElementById('m-category').value;c.zone=document.getElementById('m-zone').value.trim();c.address=document.getElementById('m-address').value.trim();c.website=document.getElementById('m-website').value.trim();c.lots=lotsVal===''?null:parseInt(lotsVal);c.source=document.getElementById('m-source').value.trim();c.notes=rawNotes;
+    if(contact.name)c.contacts[0]=contact;
+    queueSave(editingId);showToast(`${company} updated.`);
+  } else {
+    // Wrap initial notes as a log entry if provided
+    const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',priority:'',createdAt:todayKey()};
+    contacts.push(newC);
+    addAct(company,'status','none','');
+    apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
+    showToast(`${company} added!`);
+  }
+  closeModal();render();updateStats();
 }
 
 function renderRepManager(){
   document.getElementById('rep-list').innerHTML=reps.map((r,i)=>{
-    const c=repColor(i);const cnt=builders.filter(b=>getLog(b.p).rep===r).length;
-    return`<div class="rep-chip" style="background:${c.bg};border-color:${c.color}40;">
-      <span style="width:24px;height:24px;border-radius:50%;background:${c.color};color:${c.bg};display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">${initials(r)}</span>
-      <span style="font-weight:600;color:${c.color};">${r}</span>
-      <span style="font-size:11px;color:${c.color};opacity:.7;">${cnt} builder${cnt!==1?'s':''}</span>
-      ${i===0?'':`<button onclick="removeRep(${i})" style="background:none;border:none;cursor:pointer;color:${c.color};opacity:.5;font-size:16px;padding:0;margin-left:2px;">×</button>`}
-    </div>`;
+    const c=repColor(i);const cnt=contacts.filter(b=>b.rep===r).length;
+    return`<div class="rep-chip" style="background:${c.bg};border-color:${c.color}40;"><span style="width:24px;height:24px;border-radius:50%;background:${c.color};color:${c.bg};display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">${initials(r)}</span><span style="font-weight:600;color:${c.color};">${r}</span><span style="font-size:11px;color:${c.color};opacity:.7;">${cnt} contact${cnt!==1?'s':''}</span>${i===0?'':`<button onclick="removeRep(${i})" style="background:none;border:none;cursor:pointer;color:${c.color};opacity:.5;font-size:16px;padding:0;margin-left:2px;">×</button>`}</div>`;
   }).join('');
 }
-
 function addRep(){const inp=document.getElementById('new-rep-name');const name=inp.value.trim();if(!name||reps.includes(name)){showToast('Name already exists or empty.');return;}reps.push(name);inp.value='';apiPost({action:'saveReps',data:reps}).catch(()=>{});renderRepManager();populateRepFilter();render();showToast(`${name} added.`);}
-function removeRep(idx){const name=reps[idx];if(!confirm(`Remove ${name}?`))return;builders.forEach(b=>{if(getLog(b.p).rep===name){getLog(b.p).rep='';queueSaveLog(b.p);}});reps.splice(idx,1);apiPost({action:'saveReps',data:reps}).catch(()=>{});renderRepManager();populateRepFilter();render();}
+function removeRep(idx){const name=reps[idx];if(!confirm(`Remove ${name}?`))return;contacts.forEach(c=>{if(c.rep===name){c.rep='';queueSave(c.id);}});reps.splice(idx,1);apiPost({action:'saveReps',data:reps}).catch(()=>{});renderRepManager();populateRepFilter();render();}
 
 function renderReport(){
   const el=document.getElementById('report-content');
@@ -708,32 +669,24 @@ function renderReport(){
   const days=Object.keys(grouped).sort().reverse();
   const todayCount=(grouped[todayKey()]||{entries:[]}).entries.length;
   const touched=new Set(activity.map(a=>a.builder)).size;
-  const none=builders.filter(b=>getLog(b.p).status==='none').length;
-  const prog=builders.filter(b=>['contacted','visited'].includes(getLog(b.p).status)).length;
-  const done=builders.filter(b=>['meeting','approved'].includes(getLog(b.p).status)).length;
-  const emailSent=builders.filter(b=>getLog(b.p).emailDate).length;
-  const liSent=builders.filter(b=>getLog(b.p).liDate).length;
+  const none=contacts.filter(c=>!c.status||c.status==='none').length;
+  const prog=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  const done=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
+  const emailSent=contacts.filter(c=>c.emailDate).length;
+  const liSent=contacts.filter(c=>c.liDate).length;
 
   let repSection='';
   if(reps.length){
     repSection=`<div style="background:#fafaf8;border:1px solid #e5e5e3;border-radius:8px;padding:12px 16px;margin-bottom:16px;"><div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Rep breakdown</div><div style="display:flex;flex-wrap:wrap;gap:12px;">`;
-    reps.forEach((r,ri)=>{const c=repColor(ri);const cnt=builders.filter(b=>getLog(b.p).rep===r).length;const meet=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).status==='meeting').length;const approv=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).status==='approved').length;const em=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).emailDate).length;const li=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).liDate).length;repSection+=`<div style="display:flex;align-items:center;gap:7px;font-size:12px;"><span style="width:22px;height:22px;border-radius:50%;background:${c.color};color:${c.bg};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">${initials(r)}</span><span style="font-weight:600;">${r}</span><span style="color:#888;">${cnt} assigned · ${em} emailed · ${li} LinkedIn · ${meet} meeting · ${approv} approved</span></div>`;});
+    reps.forEach((r,ri)=>{const c=repColor(ri);const cnt=contacts.filter(b=>b.rep===r).length;const meet=contacts.filter(b=>b.rep===r&&b.status==='meeting').length;const approv=contacts.filter(b=>b.rep===r&&b.status==='approved').length;const em=contacts.filter(b=>b.rep===r&&b.emailDate).length;const li=contacts.filter(b=>b.rep===r&&b.liDate).length;repSection+=`<div style="display:flex;align-items:center;gap:7px;font-size:12px;"><span style="width:22px;height:22px;border-radius:50%;background:${c.color};color:${c.bg};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;">${initials(r)}</span><span style="font-weight:600;">${r}</span><span style="color:#888;">${cnt} assigned · ${em} emailed · ${li} LinkedIn · ${meet} meeting · ${approv} approved</span></div>`;});
     repSection+=`</div></div>`;
   }
 
-  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-    <div><div style="font-size:16px;font-weight:600;">Activity report</div>
-    <div style="font-size:11px;color:#888;margin-top:3px;">${activity.length} actions · ${touched} builders touched · ${todayCount} today · ${none} untouched / ${prog} in progress / ${done} done · ${emailSent} emailed · ${liSent} LinkedIn</div></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-primary" onclick="copyReport()"><i class="ti ti-copy"></i> Copy for boss</button>
-      <button class="btn" onclick="confirmClear()" style="color:#A32D2D;border-color:#F09595;">Clear log</button>
-    </div>
-  </div>${repSection}`;
-
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;"><div><div style="font-size:16px;font-weight:600;">Activity report</div><div style="font-size:11px;color:#888;margin-top:3px;">${activity.length} actions · ${touched} contacts touched · ${todayCount} today · ${none} untouched / ${prog} in progress / ${done} done · ${emailSent} emailed · ${liSent} LinkedIn</div></div><div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="copyReport()"><i class="ti ti-copy"></i> Copy for boss</button><button class="btn btn-danger" onclick="confirmClear()">Clear log</button></div></div>${repSection}`;
   days.forEach(day=>{
     const g=grouped[day];html+=`<div class="day-group"><div class="day-label">${g.label}</div>`;
     g.entries.slice().reverse().forEach(a=>{
-      const iconMap={status:'ti-arrow-right',date:'ti-calendar',notes:'ti-note',rep:'ti-user',contact:'ti-id-badge',address:'ti-map-pin',website:'ti-world',emailDate:'ti-mail',emailNote:'ti-mail',liDate:'ti-brand-linkedin',liNote:'ti-brand-linkedin'};
+      const iconMap={status:'ti-arrow-right',visitDate:'ti-calendar',notes:'ti-note',rep:'ti-user',contact:'ti-id-badge',address:'ti-map-pin',website:'ti-world',emailDate:'ti-mail',emailNote:'ti-mail',liDate:'ti-brand-linkedin',liNote:'ti-brand-linkedin'};
       const icon=iconMap[a.field]||'ti-pencil';
       const repTag=a.rep?`<span style="font-size:10px;color:#aaa;margin-left:8px;">via ${a.rep}</span>`:'';
       html+=`<div class="log-entry"><div class="log-time">${a.ts}</div><div class="log-text"><i class="ti ${icon}" style="font-size:11px;margin-right:4px;color:#aaa;"></i>${a.msg}${a.status?`<span class="log-badge ${LB_CLASS[a.status]}">${STATUS_LABEL[a.status]}</span>`:''}${repTag}</div></div>`;
@@ -747,13 +700,13 @@ function copyReport(){
   const grouped={};activity.forEach(a=>{if(!grouped[a.day])grouped[a.day]={label:a.dayLabel,entries:[]};grouped[a.day].entries.push(a);});
   const days=Object.keys(grouped).sort().reverse();
   const todayCount=(grouped[todayKey()]||{entries:[]}).entries.length;
-  const none=builders.filter(b=>getLog(b.p).status==='none').length;
-  const prog=builders.filter(b=>['contacted','visited'].includes(getLog(b.p).status)).length;
-  const done=builders.filter(b=>['meeting','approved'].includes(getLog(b.p).status)).length;
-  const emailSent=builders.filter(b=>getLog(b.p).emailDate).length;
-  const liSent=builders.filter(b=>getLog(b.p).liDate).length;
-  let txt=`AIDAN'S HOME SERVICES — BUILDER OUTREACH REPORT\nGenerated: ${new Date().toLocaleString()}\n\nPIPELINE SUMMARY\nNot contacted: ${none}  |  In progress: ${prog}  |  Done: ${done}\nEmails sent: ${emailSent}  |  LinkedIn outreach: ${liSent}\nTotal actions: ${activity.length}  |  Today: ${todayCount}\n\n`;
-  if(reps.length){txt+=`REP BREAKDOWN\n`;reps.forEach(r=>{const cnt=builders.filter(b=>getLog(b.p).rep===r).length;const meet=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).status==='meeting').length;const approv=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).status==='approved').length;const em=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).emailDate).length;const li=builders.filter(b=>getLog(b.p).rep===r&&getLog(b.p).liDate).length;txt+=`  ${r}: ${cnt} assigned, ${em} emailed, ${li} LinkedIn, ${meet} meeting, ${approv} approved\n`;});txt+=`\n`;}
+  const none=contacts.filter(c=>!c.status||c.status==='none').length;
+  const prog=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  const done=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
+  const emailSent=contacts.filter(c=>c.emailDate).length;
+  const liSent=contacts.filter(c=>c.liDate).length;
+  let txt=`AIDAN'S HOME SERVICES — NEW CONTACT TRACKER REPORT\nGenerated: ${new Date().toLocaleString()}\n\nPIPELINE SUMMARY\nTotal contacts: ${contacts.length}  |  Not contacted: ${none}  |  In progress: ${prog}  |  Done: ${done}\nEmails sent: ${emailSent}  |  LinkedIn outreach: ${liSent}\nTotal actions: ${activity.length}  |  Today: ${todayCount}\n\n`;
+  if(reps.length){txt+=`REP BREAKDOWN\n`;reps.forEach(r=>{const cnt=contacts.filter(c=>c.rep===r).length;const meet=contacts.filter(c=>c.rep===r&&c.status==='meeting').length;const approv=contacts.filter(c=>c.rep===r&&c.status==='approved').length;const em=contacts.filter(c=>c.rep===r&&c.emailDate).length;const li=contacts.filter(c=>c.rep===r&&c.liDate).length;txt+=`  ${r}: ${cnt} assigned, ${em} emailed, ${li} LinkedIn, ${meet} meeting, ${approv} approved\n`;});txt+=`\n`;}
   days.forEach(day=>{const g=grouped[day];txt+=`--- ${g.label} ---\n`;g.entries.slice().reverse().forEach(a=>{txt+=`  ${a.ts}  ${a.msg.replace(/<[^>]+>/g,'')}${a.rep?' ('+a.rep+')':''}\n`;});txt+=`\n`;});
   navigator.clipboard.writeText(txt).then(()=>showToast('Report copied!')).catch(()=>alert('Copy failed.'));
 }
@@ -761,10 +714,10 @@ function copyReport(){
 function confirmClear(){if(!confirm('Clear the entire activity log?'))return;activity=[];apiPost({action:'saveActivity',data:{_clear:true}}).catch(()=>{});renderReport();}
 
 function exportCSV(){
-  const rows=[['#','Builder','Type','Zone','Contact name','Title','Phone','Email','LinkedIn','Address','Website','Lots','Assigned rep','Email outreach date','Email notes','LinkedIn outreach date','LinkedIn notes','Status','Last visit','Notes']];
-  builders.forEach(b=>{const log=getLog(b.p);b.contacts.forEach((c,ci)=>{rows.push([ci===0?b.p:'',ci===0?b.name:'',ci===0?b.type:'',ci===0?b.zone:'',c.name,c.title,c.phone,c.email,c.linkedin,ci===0?b.address:'',ci===0?b.website:'',ci===0?(b.lots===null?'':b.lots):'',ci===0?(log.rep||''):'',ci===0?(log.emailDate||''):'',ci===0?(log.emailNote||''):'',ci===0?(log.liDate||''):'',ci===0?(log.liNote||''):'',ci===0?(STATUS_LABEL[log.status]||''):'',ci===0?(log.date||''):'',ci===0?(log.notes||''):'' ]);});});
+  const rows=[['Company','Category','Zone','Met where','Contact name','Title','Phone','Email','LinkedIn','Address','Website','Lots','Assigned rep','Email outreach date','Email notes','LinkedIn outreach date','LinkedIn notes','Status','Last visit','Notes','Added']];
+  contacts.forEach(c=>{(c.contacts||[{name:'',title:'',phone:'',email:'',linkedin:''}]).forEach((ct,ci)=>{rows.push([ci===0?c.company:'',ci===0?c.category:'',ci===0?c.zone:'',ci===0?c.source:'',ct.name,ct.title,ct.phone,ct.email,ct.linkedin,ci===0?c.address:'',ci===0?c.website:'',ci===0?(c.lots==null?'':c.lots):'',ci===0?(c.rep||''):'',ci===0?(c.emailDate||''):'',ci===0?(c.emailNote||''):'',ci===0?(c.liDate||''):'',ci===0?(c.liNote||''):'',ci===0?(STATUS_LABEL[c.status||'none']||''):'',ci===0?(c.visitDate||''):'',ci===0?(c.notes||''):'',ci===0?(c.createdAt||''):'' ]);});});
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='aidan_builder_visits.csv';a.click();
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='aidan_new_contacts.csv';a.click();
 }
 
 function switchTab(tab){
