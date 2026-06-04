@@ -10,12 +10,12 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;font-size:13px;}
 .topbar{background:#fff;border-bottom:1px solid #e5e5e3;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand-logo{width:36px;height:36px;background:#1a6b3a;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;}
+.brand-logo{width:36px;height:36px;background:#003DA5;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;}
 .brand-name{font-size:16px;font-weight:600;color:#1a1a1a;}
 .brand-sub{font-size:11px;color:#888;}
 .sync-indicator{font-size:11px;color:#888;display:flex;align-items:center;gap:5px;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#ccc;}
-.sync-dot.ok{background:#3B6D11;}
+.sync-dot.ok{background:#003DA5;}
 .sync-dot.saving{background:#BA7517;animation:pulse 1s infinite;}
 .sync-dot.error{background:#A32D2D;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
@@ -27,12 +27,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab-row{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid #e5e5e3;padding-bottom:0;}
 .tab{font-size:12px;padding:7px 14px;border:none;background:none;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:5px;}
 .tab:hover{color:#1a1a1a;}
-.tab.active{color:#1a6b3a;border-bottom-color:#1a6b3a;font-weight:500;}
+.tab.active{color:#003DA5;border-bottom-color:#003DA5;font-weight:500;}
 .card{background:#fff;border:1px solid #e5e5e3;border-radius:10px;overflow:hidden;margin-bottom:16px;}
 .filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #f0f0ee;align-items:center;}
 .filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:7px;border:1px solid #e0e0de;background:#fff;color:#1a1a1a;outline:none;}
 .filters input[type=text]{flex:1;min-width:140px;}
-.filters input:focus,.filters select:focus{border-color:#1a6b3a;}
+.filters input:focus,.filters select:focus{border-color:#003DA5;}
 .edit-hint{font-size:11px;color:#888;padding:8px 16px;background:#fafaf8;border-bottom:1px solid #f0f0ee;display:flex;align-items:center;gap:5px;}
 .scroll-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 300px);}
 .col-freeze-1{position:sticky;left:0;z-index:6;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,.06);}
@@ -53,14 +53,18 @@ tr:hover td{background:#fafaf8;}
 .badge-other{background:#F1EFE8;color:#444441;}
 .ei{font-size:12px;border:1px solid transparent;border-radius:5px;padding:3px 6px;background:transparent;color:#1a1a1a;width:100%;font-family:inherit;}
 .ei:hover{border-color:#e0e0de;background:#fff;}
-.ei:focus{border-color:#1a6b3a;background:#fff;outline:none;}
+.ei:focus{border-color:#003DA5;background:#fff;outline:none;}
 .ei::placeholder{color:#bbb;}
 .fsel{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;}
-.fsel:focus{border-color:#1a6b3a;}
+.fsel:focus{border-color:#003DA5;}
 .outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 6px;background:#fafaf8;color:#888;width:100%;outline:none;font-family:inherit;margin-top:4px;}
-.outreach-date:focus{border-color:#1a6b3a;background:#fff;color:#1a1a1a;}
+.outreach-date:focus{border-color:#003DA5;background:#fff;color:#1a1a1a;}
 .note-sent-label{font-weight:600;color:#1a1a1a;}
-.add-contact-btn{font-size:11px;color:#1a6b3a;background:none;border:none;cursor:pointer;padding:3px 0;display:flex;align-items:center;gap:3px;margin-top:4px;}
+.priority-sel-now{background:#D4A017;color:#fff;font-weight:700;}
+.priority-sel-high{background:#C0392B;color:#fff;font-weight:700;}
+.priority-sel-med{background:#F9E04B;color:#5a4a00;font-weight:600;}
+.priority-sel-low{background:#bbb;color:#fff;font-weight:600;}
+.add-contact-btn{font-size:11px;color:#003DA5;background:none;border:none;cursor:pointer;padding:3px 0;display:flex;align-items:center;gap:3px;margin-top:4px;}
 .add-contact-btn:hover{text-decoration:underline;}
 .contact-row{border-bottom:1px solid #f5f5f3;padding-bottom:5px;margin-bottom:5px;position:relative;padding-right:18px;}
 .contact-row:last-of-type{border-bottom:none;margin-bottom:0;}
@@ -69,8 +73,8 @@ tr:hover td{background:#fafaf8;}
 .rep-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;margin-bottom:4px;}
 .btn{font-size:12px;padding:7px 14px;border-radius:7px;border:1px solid #e0e0de;background:#fff;color:#1a1a1a;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;}
 .btn:hover{background:#f5f5f3;}
-.btn-primary{background:#1a6b3a;color:#fff;border-color:#1a6b3a;}
-.btn-primary:hover{background:#155c30;}
+.btn-primary{background:#003DA5;color:#fff;border-color:#003DA5;}
+.btn-primary:hover{background:#002f8a;}
 .btn-danger{background:#fff;color:#A32D2D;border-color:#F09595;}
 .btn-danger:hover{background:#fff5f5;}
 .log-entry{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f3;}
@@ -92,7 +96,7 @@ tr:hover td{background:#fafaf8;}
 .rep-manager-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
 .rep-chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 12px;border-radius:99px;border:1px solid #e0e0de;}
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:12px;}
-.spinner{width:32px;height:32px;border:3px solid #e0e0de;border-top-color:#1a6b3a;border-radius:50%;animation:spin .8s linear infinite;}
+.spinner{width:32px;height:32px;border:3px solid #e0e0de;border-top-color:#003DA5;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .3s;}
 .toast.show{opacity:1;}
@@ -103,7 +107,7 @@ tr:hover td{background:#fafaf8;}
 .modal-field{margin-bottom:12px;}
 .modal-field label{display:block;font-size:11px;font-weight:500;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
 .modal-field input,.modal-field select,.modal-field textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:7px;border:1px solid #e0e0de;background:#fff;color:#1a1a1a;outline:none;font-family:inherit;}
-.modal-field input:focus,.modal-field select:focus,.modal-field textarea:focus{border-color:#1a6b3a;}
+.modal-field input:focus,.modal-field select:focus,.modal-field textarea:focus{border-color:#003DA5;}
 .modal-field textarea{resize:vertical;min-height:60px;}
 .modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
@@ -119,7 +123,7 @@ tr:hover td{background:#fafaf8;}
 .note-del:hover{color:#A32D2D;}
 .note-add{margin-top:5px;width:100%;}
 .note-add input{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:5px 8px;width:100%;background:#fafaf8;outline:none;font-family:inherit;color:#1a1a1a;}
-.note-add input:focus{border-color:#1a6b3a;background:#fff;}
+.note-add input:focus{border-color:#003DA5;background:#fff;}
 .note-add input::placeholder{color:#bbb;}
 </style>
 </head>
@@ -229,7 +233,7 @@ tr:hover td{background:#fafaf8;}
     <div class="stat"><div class="stat-label">Total contacts</div><div class="stat-val" id="s-total">0</div></div>
     <div class="stat"><div class="stat-label">Not contacted</div><div class="stat-val" id="s-none">0</div></div>
     <div class="stat"><div class="stat-label">In progress</div><div class="stat-val" id="s-prog" style="color:#854F0B;">0</div></div>
-    <div class="stat"><div class="stat-label">Meeting / approved</div><div class="stat-val" id="s-done" style="color:#3B6D11;">0</div></div>
+    <div class="stat"><div class="stat-label">Meeting / approved</div><div class="stat-val" id="s-done" style="color:#003DA5;">0</div></div>
   </div>
 
   <div class="tab-row">
@@ -258,6 +262,13 @@ tr:hover td{background:#fafaf8;}
           <option value="meeting">Meeting set</option>
           <option value="approved">Approved vendor</option>
         </select>
+        <select id="f-priority" onchange="render()">
+          <option value="">All priorities</option>
+          <option value="now">Now</option>
+          <option value="high">High</option>
+          <option value="med">Med</option>
+          <option value="low">Low</option>
+        </select>
         <select id="f-rep" onchange="render()">
           <option value="">All reps</option>
         </select>
@@ -268,10 +279,10 @@ tr:hover td{background:#fafaf8;}
         <table>
           <colgroup>
             <col style="width:210px">
-            <col style="width:80px">
-            <col style="width:110px">
+            <col style="width:100px">
             <col style="width:110px">
             <col style="width:210px">
+            <col style="width:110px">
             <col style="width:210px">
             <col style="width:120px">
             <col style="width:130px">
@@ -286,10 +297,10 @@ tr:hover td{background:#fafaf8;}
           <thead>
             <tr>
               <th class="col-freeze-1">Company</th>
-              <th>Category</th>
+              <th>Priority</th>
               <th>Zone / area</th>
-              <th>Met where</th>
               <th>Contacts</th>
+              <th>Met where</th>
               <th>Address / website</th>
               <th>Vacant Dev. Lots</th>
               <th>Assigned rep</th>
@@ -303,7 +314,7 @@ tr:hover td{background:#fafaf8;}
             </tr>
           </thead>
           <tbody id="tbody">
-            <tr><td colspan="15"><div class="empty-table"><i class="ti ti-user-plus"></i><p>No contacts yet — click "Add contact" to get started.</p></div></td></tr>
+            <tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>No contacts yet — click "Add contact" to get started.</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -367,6 +378,9 @@ function deleteContactNote(id,field,idx){
   c[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
   queueSave(id);render();
 }
+const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:'background:#C0392B;color:#fff;font-weight:700;',med:'background:#F9E04B;color:#5a4a00;font-weight:600;',low:'background:#bbb;color:#fff;font-weight:600;'};
+function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
+function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);}
 function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
 function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
@@ -528,11 +542,13 @@ function render(){
   const search=document.getElementById('search').value.toLowerCase();
   const fcat=document.getElementById('f-cat').value;
   const fs=document.getElementById('f-status').value;
+  const fp=document.getElementById('f-priority').value;
   const fr=document.getElementById('f-rep').value;
   const filtered=contacts.filter(c=>{
     if(fcat&&c.category!==fcat)return false;
     const status=c.status||'none';
     if(fs&&status!==fs)return false;
+    if(fp&&(c.priority||'')!==fp)return false;
     if(fr==='__none__'&&c.rep)return false;
     if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
     if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
@@ -540,7 +556,7 @@ function render(){
   });
 
   if(!filtered.length){
-    document.getElementById('tbody').innerHTML=`<tr><td colspan="15"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
     updateStats();return;
   }
 
@@ -550,14 +566,25 @@ function render(){
     const repOpts=`<option value="">— Unassigned —</option>`+reps.map((r,ri)=>`<option value="${r}"${c.rep===r?' selected':''}>${r}</option>`).join('');
     const catClass=CAT_CLASS[c.category]||'badge-other';
     return`<tr>
-      <td class="col-freeze-1"><input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/></td>
-      <td><span class="badge ${catClass}">${c.category||'Other'}</span></td>
+      <td class="col-freeze-1">
+        <input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/>
+        <span class="badge ${catClass}" style="margin-top:3px;display:inline-block;">${c.category||'Other'}</span>
+      </td>
+      <td>
+        <select class="fsel" onchange="setPriorityContact('${c.id}',this.value,this)" style="${priorityStyle(c.priority||'')}">
+          <option value="">— Priority —</option>
+          <option value="now" ${(c.priority||'')==='now'?'selected':''}>Now</option>
+          <option value="high" ${(c.priority||'')==='high'?'selected':''}>High</option>
+          <option value="med" ${(c.priority||'')==='med'?'selected':''}>Med</option>
+          <option value="low" ${(c.priority||'')==='low'?'selected':''}>Low</option>
+        </select>
+      </td>
       <td><input class="ei" value="${esc(c.zone)}" placeholder="Zone / area" onblur="setField('${c.id}','zone',this.value)" style="font-size:11px;color:#888;"/></td>
-      <td><input class="ei" value="${esc(c.source)}" placeholder="Where met" onblur="setField('${c.id}','source',this.value)" style="font-size:11px;color:#888;"/></td>
       <td>${renderContactsCell(c)}</td>
+      <td><textarea class="ei" rows="2" placeholder="Where met" onblur="setField('${c.id}','source',this.value)" style="font-size:11px;color:#888;resize:none;word-break:break-word;">${esc(c.source)}</textarea></td>
       <td>
         <textarea class="ei" rows="2" placeholder="Office address" onblur="setField('${c.id}','address',this.value)" style="margin-bottom:3px;resize:none;word-break:break-word;">${esc(c.address)}</textarea>
-        <textarea class="ei" rows="1" placeholder="Website" onblur="setField('${c.id}','website',this.value)" style="color:#1a6b3a;resize:none;word-break:break-all;">${esc(c.website)}</textarea>
+        <textarea class="ei" rows="1" placeholder="Website" onblur="setField('${c.id}','website',this.value)" style="color:#003DA5;resize:none;word-break:break-all;">${esc(c.website)}</textarea>
       </td>
       <td><input class="ei" type="text" value="${c.lots===null||c.lots===undefined?'':c.lots}" placeholder="—" onblur="setField('${c.id}','lots',this.value)" style="text-align:right;"/></td>
       <td>
@@ -617,7 +644,7 @@ function saveModal(){
   } else {
     // Wrap initial notes as a log entry if provided
     const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',createdAt:todayKey()};
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',priority:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
