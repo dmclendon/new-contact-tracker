@@ -34,9 +34,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .filters input[type=text]{flex:1;min-width:140px;}
 .filters input:focus,.filters select:focus{border-color:#1a6b3a;}
 .edit-hint{font-size:11px;color:#888;padding:8px 16px;background:#fafaf8;border-bottom:1px solid #f0f0ee;display:flex;align-items:center;gap:5px;}
-.scroll-wrap{overflow-x:auto;}
+.scroll-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 300px);}
+.col-freeze-1{position:sticky;left:0;z-index:6;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,.06);}
+th.col-freeze-1{background:#fafaf8;z-index:15;}
+tr:hover td.col-freeze-1{background:#fafaf8;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
-th{text-align:left;font-weight:500;font-size:11px;color:#888;border-bottom:1px solid #e5e5e3;padding:8px 10px;background:#fafaf8;white-space:nowrap;}
+th{text-align:left;font-weight:500;font-size:11px;color:#888;border-bottom:1px solid #e5e5e3;padding:8px 10px;background:#fafaf8;white-space:nowrap;position:sticky;top:0;z-index:10;}
 th.th-email{background:#fdf8f0;}
 th.th-li{background:#f0f4fb;}
 td{padding:8px 10px;border-bottom:1px solid #f0f0ee;vertical-align:top;}
@@ -54,12 +57,9 @@ tr:hover td{background:#fafaf8;}
 .ei::placeholder{color:#bbb;}
 .fsel{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;}
 .fsel:focus{border-color:#1a6b3a;}
-.outreach-cell{display:flex;flex-direction:column;gap:4px;}
-.outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 5px;background:#fff;color:#1a1a1a;width:100%;outline:none;font-family:inherit;}
-.outreach-date:focus{border-color:#1a6b3a;}
-.outreach-sent{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;display:inline-block;margin-bottom:2px;}
-.email-sent{background:#faeeda;color:#633806;}
-.li-sent{background:#E6F1FB;color:#0C447C;}
+.outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 6px;background:#fafaf8;color:#888;width:100%;outline:none;font-family:inherit;margin-top:4px;}
+.outreach-date:focus{border-color:#1a6b3a;background:#fff;color:#1a1a1a;}
+.note-sent-label{font-weight:600;color:#1a1a1a;}
 .add-contact-btn{font-size:11px;color:#1a6b3a;background:none;border:none;cursor:pointer;padding:3px 0;display:flex;align-items:center;gap:3px;margin-top:4px;}
 .add-contact-btn:hover{text-decoration:underline;}
 .contact-row{border-bottom:1px solid #f5f5f3;padding-bottom:5px;margin-bottom:5px;position:relative;padding-right:18px;}
@@ -110,10 +110,13 @@ tr:hover td{background:#fafaf8;}
 
 /* ── Log-style notes ── */
 .notes-log{display:flex;flex-direction:column;gap:0;width:100%;}
-.note-entry{display:flex;flex-direction:column;gap:1px;padding:5px 0;border-bottom:1px solid #f0f0ee;width:100%;}
+.note-entry{display:flex;flex-direction:row;align-items:flex-start;gap:4px;padding:5px 0;border-bottom:1px solid #f0f0ee;width:100%;}
 .note-entry:last-of-type{border-bottom:none;}
+.note-body{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
 .note-ts{font-size:10px;color:#bbb;line-height:1.3;letter-spacing:0.01em;}
 .note-text{font-size:12px;color:#1a1a1a;line-height:1.45;word-break:break-word;width:100%;}
+.note-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:14px;padding:0;line-height:1;flex-shrink:0;margin-top:1px;}
+.note-del:hover{color:#A32D2D;}
 .note-add{margin-top:5px;width:100%;}
 .note-add input{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:5px 8px;width:100%;background:#fafaf8;outline:none;font-family:inherit;color:#1a1a1a;}
 .note-add input:focus{border-color:#1a6b3a;background:#fff;}
@@ -208,11 +211,8 @@ tr:hover td{background:#fafaf8;}
 
 <div class="topbar">
   <div class="brand">
-    <div class="brand-logo">A</div>
-    <div>
-      <div class="brand-name">Aidan's Home Services</div>
-      <div class="brand-sub">New Contact Tracker · Atlanta 2026</div>
-    </div>
+    <img src="./logo.jpg" alt="Aidan's Home Services" style="height:42px;width:auto;object-fit:contain;"/>
+    <div class="brand-sub" style="margin-left:4px;">New Contact Tracker · Atlanta 2026</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <div class="sync-indicator">
@@ -267,14 +267,15 @@ tr:hover td{background:#fafaf8;}
       <div class="scroll-wrap">
         <table>
           <colgroup>
-            <col style="width:150px">
+            <col style="width:210px">
             <col style="width:80px">
             <col style="width:110px">
             <col style="width:110px">
             <col style="width:210px">
-            <col style="width:170px">
-            <col style="width:50px">
+            <col style="width:210px">
+            <col style="width:120px">
             <col style="width:130px">
+            <col style="width:200px">
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:120px">
@@ -284,24 +285,25 @@ tr:hover td{background:#fafaf8;}
           </colgroup>
           <thead>
             <tr>
-              <th>Company</th>
+              <th class="col-freeze-1">Company</th>
               <th>Category</th>
               <th>Zone / area</th>
               <th>Met where</th>
               <th>Contacts</th>
               <th>Address / website</th>
-              <th>Lots</th>
+              <th>Vacant Dev. Lots</th>
               <th>Assigned rep</th>
               <th class="th-email"><i class="ti ti-mail" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Email outreach</th>
               <th class="th-li"><i class="ti ti-brand-linkedin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>LinkedIn outreach</th>
+              <th><i class="ti ti-map-pin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Site visits</th>
               <th>Status</th>
-              <th>Last visit</th>
-              <th>Notes</th>
+              <th>Last activity</th>
+              <th>General notes</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="tbody">
-            <tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>No contacts yet — click "Add contact" to get started.</p></div></td></tr>
+            <tr><td colspan="15"><div class="empty-table"><i class="ti ti-user-plus"></i><p>No contacts yet — click "Add contact" to get started.</p></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -347,7 +349,7 @@ function parseNotes(str){
     line=line.trim();if(!line)return;
     const m=line.match(/^\[([^\]]+)\] (.+)$/);
     if(m)entries.push({ts:m[1],text:m[2]});
-    else entries.push({ts:'',text:line});
+    else entries.push({ts:'Jun 3, 2026',text:line});
   });
   return entries;
 }
@@ -355,20 +357,29 @@ function fmtNoteTs(){
   const now=new Date();
   return now.toLocaleDateString([],{month:'short',day:'numeric'})+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 }
-function renderLogHtml(entries,appendCmd){
-  const rows=entries.map(e=>`<div class="note-entry"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div>`).join('');
+function renderLogHtml(entries,appendCmd,delCmd){
+  const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="${delCmd.replace('IDX',i)}" title="Delete entry">×</button></div>`).join('');
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){${appendCmd};}"/></div></div>`;
 }
+function deleteContactNote(id,field,idx){
+  const c=getC(id);const entries=parseNotes(c[field]);
+  entries.splice(idx,1);
+  c[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
+  queueSave(id);render();
+}
+function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
 function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
   const c=getC(id);
   const entry=`[${fmtNoteTs()}] ${text}`;
   c[field]=c[field]?c[field]+'\n'+entry:entry;
+  if(['emailNote','liNote','siteVisitNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
   inputEl.value='';
   queueSave(id);
   if(field==='notes')addAct(c.company,'notes',text,c.rep);
   else if(field==='emailNote')addAct(c.company,'emailNote',text,c.rep);
   else if(field==='liNote')addAct(c.company,'liNote',text,c.rep);
+  else if(field==='siteVisitNote')addAct(c.company,'siteVisitNote',text,c.rep);
   render();
 }
 
@@ -399,6 +410,13 @@ async function loadAll(){
   }catch(e){
     setSyncStatus('error');showToast('Could not connect — working offline');
   }
+  // Backfill Jun 3 2026 for any existing entries that have outreach/visit data but no lastActivity
+  contacts.forEach(c=>{
+    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.siteVisitNote||c.notes)){
+      c.lastActivity=new Date(2026,5,3,12,0,0).toISOString();
+      queueSave(c.id);
+    }
+  });
   document.getElementById('loading').style.display='none';
   render();updateStats();populateRepFilter();
 }
@@ -422,7 +440,7 @@ function queueSave(id){
 }
 
 function addAct(companyName,field,newVal,rep){
-  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
+  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
   const entry={ts:nowStr(),day:todayKey(),dayLabel:todayStr(),msg:msgs[field]||`Updated: <strong>${companyName}</strong>`,field,status:field==='status'?newVal:null,builder:companyName,rep:rep||''};
   activity.push(entry);
   apiPost({action:'saveActivity',data:entry}).catch(()=>{});
@@ -493,19 +511,17 @@ function renderContactsCell(c){
   return html;
 }
 
+function fmtDisplayDate(iso){if(!iso)return'';try{const[y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d);if(isNaN(dt.getTime()))return iso;return dt.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});}catch(e){return iso;}}
 function renderOutreachCell(c,type){
   const dateVal=type==='email'?c.emailDate:c.liDate;
   const noteVal=type==='email'?c.emailNote:c.liNote;
-  const sentClass=type==='email'?'email-sent':'li-sent';
-  const sentLabel=type==='email'?'Email sent':'Connected';
-  const onDateChange=type==='email'?`setEmailDate('${c.id}',this.value)`:`setLiDate('${c.id}',this.value)`;
   const field=type==='email'?'emailNote':'liNote';
-  const bgStyle=type==='email'?'background:#fffdf7;':'background:#f7faff;';
-  return`<div class="outreach-cell" style="${bgStyle}padding:3px;">
-    ${dateVal?`<span class="outreach-sent ${sentClass}">${sentLabel} ${dateVal}</span>`:''}
-    <input type="date" class="outreach-date" value="${dateVal||''}" onchange="${onDateChange}" title="Date of outreach"/>
-    ${renderLogHtml(parseNotes(noteVal),`appendContactNote('${c.id}',this,'${field}')`)}
-  </div>`;
+  const sentLabel=type==='email'?'Email sent':'LinkedIn connected';
+  const onDateChange=type==='email'?`setEmailDate('${c.id}',this.value)`:`setLiDate('${c.id}',this.value)`;
+  const noteEntries=parseNotes(noteVal);
+  let rows='';
+  rows+=noteEntries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteContactNote('${c.id}','${field}',${i})" title="Delete entry">×</button></div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'${field}');}"/></div></div>`;
 }
 
 function render(){
@@ -524,7 +540,7 @@ function render(){
   });
 
   if(!filtered.length){
-    document.getElementById('tbody').innerHTML=`<tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
+    document.getElementById('tbody').innerHTML=`<tr><td colspan="15"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
     updateStats();return;
   }
 
@@ -534,25 +550,26 @@ function render(){
     const repOpts=`<option value="">— Unassigned —</option>`+reps.map((r,ri)=>`<option value="${r}"${c.rep===r?' selected':''}>${r}</option>`).join('');
     const catClass=CAT_CLASS[c.category]||'badge-other';
     return`<tr>
-      <td><input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/></td>
+      <td class="col-freeze-1"><input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/></td>
       <td><span class="badge ${catClass}">${c.category||'Other'}</span></td>
       <td><input class="ei" value="${esc(c.zone)}" placeholder="Zone / area" onblur="setField('${c.id}','zone',this.value)" style="font-size:11px;color:#888;"/></td>
       <td><input class="ei" value="${esc(c.source)}" placeholder="Where met" onblur="setField('${c.id}','source',this.value)" style="font-size:11px;color:#888;"/></td>
       <td>${renderContactsCell(c)}</td>
       <td>
-        <input class="ei" value="${esc(c.address)}" placeholder="Office address" onblur="setField('${c.id}','address',this.value)" style="margin-bottom:3px;"/>
-        <input class="ei" value="${esc(c.website)}" placeholder="Website" onblur="setField('${c.id}','website',this.value)" style="color:#1a6b3a;"/>
+        <textarea class="ei" rows="2" placeholder="Office address" onblur="setField('${c.id}','address',this.value)" style="margin-bottom:3px;resize:none;word-break:break-word;">${esc(c.address)}</textarea>
+        <textarea class="ei" rows="1" placeholder="Website" onblur="setField('${c.id}','website',this.value)" style="color:#1a6b3a;resize:none;word-break:break-all;">${esc(c.website)}</textarea>
       </td>
-      <td><input class="ei" type="number" value="${c.lots===null||c.lots===undefined?'':c.lots}" placeholder="—" onblur="setField('${c.id}','lots',this.value)" style="text-align:right;"/></td>
+      <td><input class="ei" type="text" value="${c.lots===null||c.lots===undefined?'':c.lots}" placeholder="—" onblur="setField('${c.id}','lots',this.value)" style="text-align:right;"/></td>
       <td>
         ${c.rep?repPill(c.rep):'<span style="font-size:11px;color:#bbb;">— unassigned —</span>'}
         <select class="fsel" style="margin-top:4px;" onchange="setRep('${c.id}',this.value)">${repOpts}</select>
       </td>
-      <td style="padding:4px 6px;">${renderOutreachCell(c,'email')}</td>
-      <td style="padding:4px 6px;">${renderOutreachCell(c,'li')}</td>
+      <td>${renderOutreachCell(c,'email')}</td>
+      <td>${renderOutreachCell(c,'li')}</td>
+      <td>${renderLogHtml(parseNotes(c.siteVisitNote||''),`appendContactNote('${c.id}',this,'siteVisitNote')`,`deleteContactNote('${c.id}','siteVisitNote',IDX)`)}</td>
       <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select></td>
-      <td><input type="date" class="fsel" value="${c.visitDate||''}" onchange="setDate('${c.id}',this.value)"/></td>
-      <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`)}</td>
+      <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
+      <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
       <td>
         <button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete contact" style="position:static;font-size:18px;color:#ddd;padding:2px;">
           <i class="ti ti-trash" style="font-size:13px;"></i>
@@ -600,7 +617,7 @@ function saveModal(){
   } else {
     // Wrap initial notes as a log entry if provided
     const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',createdAt:todayKey()};
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
