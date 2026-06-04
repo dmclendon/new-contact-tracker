@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Aidan's New Contact Tracker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0U4RjBGRSIgcng9IjEyIi8+CiAgPHRleHQgeD0iNTAiIHk9Ijc4IiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNzIiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZmlsbD0iIzAwM0RBNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QTwvdGV4dD4KPC9zdmc+"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -224,7 +225,7 @@ tr:hover td{background:#fafaf8;}
       <span id="sync-label">Connecting…</span>
     </div>
     <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
-    <button class="btn btn-primary" onclick="switchTab('report')"><i class="ti ti-chart-bar"></i> Boss report</button>
+    <button class="btn btn-primary" onclick="switchTab('report')"><i class="ti ti-chart-bar"></i> Activity Report</button>
   </div>
 </div>
 
@@ -238,7 +239,7 @@ tr:hover td{background:#fafaf8;}
 
   <div class="tab-row">
     <button class="tab active" id="tab-log" onclick="switchTab('log')"><i class="ti ti-address-book"></i> Contacts</button>
-    <button class="tab" id="tab-report" onclick="switchTab('report')"><i class="ti ti-clipboard"></i> Boss report</button>
+    <button class="tab" id="tab-report" onclick="switchTab('report')"><i class="ti ti-clipboard"></i> Activity Report</button>
     <button class="tab" id="tab-reps" onclick="switchTab('reps')"><i class="ti ti-users"></i> Manage reps</button>
   </div>
 
