@@ -277,7 +277,7 @@ tr:hover td{background:#fafaf8;}
           <option value="visited">Site visit</option>
           <option value="office_visit">Office Visit</option>
           <option value="meeting">Meeting set</option>
-          <option value="approved">Approved vendor</option>
+
         </select>
         <button class="fp-btn" onclick="togglePF('now',this)">Now</button>
         <button class="fp-btn" onclick="togglePF('high',this)">High</button>
@@ -304,6 +304,7 @@ tr:hover td{background:#fafaf8;}
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:200px">
+            <col style="width:200px">
             <col style="width:100px">
             <col style="width:220px">
             <col style="width:36px">
@@ -320,6 +321,7 @@ tr:hover td{background:#fafaf8;}
               <th>Assigned rep</th>
               <th class="th-email"><i class="ti ti-mail" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Email outreach</th>
               <th class="th-li"><i class="ti ti-brand-linkedin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>LinkedIn outreach</th>
+              <th><i class="ti ti-building" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Office visits</th>
               <th><i class="ti ti-map-pin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Site visits</th>
               <th>Status</th>
               <th>Last activity</th>
@@ -355,9 +357,9 @@ tr:hover td{background:#fafaf8;}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycby8gbUs3PPRFcwreJ2s5HwDgr65V2xbumY_mAq-m4Un0_QWeu7fMApB2Jjhd7cEYOxVBQ/exec';
 
-const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"replied",label:"Received Reply"},{val:"visited",label:"Site visit"},{val:"office_visit",label:"Office Visit"},{val:"meeting",label:"Meeting set"},{val:"approved",label:"Approved vendor"}];
-const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",replied:"Received Reply",visited:"Site visit",office_visit:"Office Visit",meeting:"Meeting set",approved:"Approved vendor"};
-const LB_CLASS={none:"lb-none",contacted:"lb-contacted",replied:"lb-replied",visited:"lb-visited",office_visit:"lb-office-visit",meeting:"lb-meeting",approved:"lb-approved"};
+const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"replied",label:"Received Reply"},{val:"visited",label:"Site visit"},{val:"office_visit",label:"Office Visit"},{val:"meeting",label:"Meeting set"},];
+const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",replied:"Received Reply",visited:"Site visit",office_visit:"Office Visit",meeting:"Meeting set",};
+const LB_CLASS={none:"lb-none",contacted:"lb-contacted",replied:"lb-replied",visited:"lb-visited",office_visit:"lb-office-visit",meeting:"lb-meeting",};
 const CAT_CLASS={Builder:"badge-builder",Supplier:"badge-supplier",Architect:"badge-architect",Realtor:"badge-realtor",Other:"badge-other"};
 const REP_COLORS=[{bg:"#E6F1FB",color:"#0C447C"},{bg:"#E1F5EE",color:"#085041"},{bg:"#EEEDFE",color:"#3C3489"},{bg:"#FAEEDA",color:"#633806"},{bg:"#FAECE7",color:"#712B13"},{bg:"#FBEAF0",color:"#72243E"},{bg:"#EAF3DE",color:"#27500A"},{bg:"#F1EFE8",color:"#444441"}];
 
@@ -409,17 +411,21 @@ const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:
 function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
 function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);render();}
 function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
+const OUTREACH_LABEL={emailNote:'Email outreach',liNote:'LinkedIn outreach',officeVisitNote:'Office visit',siteVisitNote:'Site visit'};
 function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
   const c=getC(id);
-  const entry=`[${fmtNoteTs()}] ${text}`;
+  const ts=fmtNoteTs();
+  const entry=`[${ts}] ${text}`;
   c[field]=c[field]?c[field]+'\n'+entry:entry;
-  if(['emailNote','liNote','siteVisitNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
+  if(['emailNote','liNote','officeVisitNote','siteVisitNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
+  if(OUTREACH_LABEL[field]){const sEntry=`[${ts}] ${OUTREACH_LABEL[field]}: ${text}`;c.statusLog=c.statusLog?c.statusLog+'\n'+sEntry:sEntry;}
   inputEl.value='';
   queueSave(id);
   if(field==='notes')addAct(c.company,'notes',text,c.rep);
   else if(field==='emailNote')addAct(c.company,'emailNote',text,c.rep);
   else if(field==='liNote')addAct(c.company,'liNote',text,c.rep);
+  else if(field==='officeVisitNote')addAct(c.company,'officeVisitNote',text,c.rep);
   else if(field==='siteVisitNote')addAct(c.company,'siteVisitNote',text,c.rep);
   render();
 }
@@ -452,9 +458,10 @@ async function loadAll(){
   }catch(e){
     setSyncStatus('error');showToast('Could not connect — working offline');
   }
+  restoreLocalAnnotations();
   // Backfill Jun 3 2026 for any existing entries that have outreach/visit data but no lastActivity
   contacts.forEach(c=>{
-    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.siteVisitNote||c.notes)){
+    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.officeVisitNote||c.siteVisitNote||c.notes)){
       c.lastActivity=new Date(2026,5,3,12,0,0).toISOString();
       queueSave(c.id);
     }
@@ -464,6 +471,9 @@ async function loadAll(){
 }
 
 function getC(id){return contacts.find(c=>c.id===id);}
+const LOCAL_FIELDS=['nextSteps','statusLog','priority','officeVisitNote'];
+function saveLocalAnnotations(id){const c=getC(id);if(!c)return;try{LOCAL_FIELDS.forEach(f=>{localStorage.setItem(`ct_${f}_${id}`,c[f]||'');});}catch(e){}}
+function restoreLocalAnnotations(){contacts.forEach(c=>{try{LOCAL_FIELDS.forEach(f=>{const v=localStorage.getItem(`ct_${f}_${c.id}`);if(v)c[f]=v;});}catch(e){}});}
 
 function nowStr(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 function todayStr(){return new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
@@ -475,6 +485,7 @@ function queueSave(id){
     const ids=Object.keys(saveQueue);saveQueue={};
     for(const i of ids){
       const c=getC(i);if(!c)continue;
+      saveLocalAnnotations(i);
       try{await apiPost({action:'saveNewContact',data:c});}catch(e){}
     }
     setSyncStatus('ok');
@@ -482,7 +493,7 @@ function queueSave(id){
 }
 
 function addAct(companyName,field,newVal,rep){
-  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
+  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,officeVisitNote:`Office visit: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
   const entry={ts:nowStr(),day:todayKey(),dayLabel:todayStr(),msg:msgs[field]||`Updated: <strong>${companyName}</strong>`,field,status:field==='status'?newVal:null,builder:companyName,rep:rep||''};
   activity.push(entry);
   apiPost({action:'saveActivity',data:entry}).catch(()=>{});
@@ -645,6 +656,7 @@ function render(){
       </td>
       <td>${renderOutreachCell(c,'email')}</td>
       <td>${renderOutreachCell(c,'li')}</td>
+      <td>${renderLogHtml(parseNotes(c.officeVisitNote||''),`appendContactNote('${c.id}',this,'officeVisitNote')`,`deleteContactNote('${c.id}','officeVisitNote',IDX)`)}</td>
       <td>${renderLogHtml(parseNotes(c.siteVisitNote||''),`appendContactNote('${c.id}',this,'siteVisitNote')`,`deleteContactNote('${c.id}','siteVisitNote',IDX)`)}</td>
       <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select>${renderStatusLog(c.id,parseNotes(c.statusLog||''))}</td>
       <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
@@ -696,7 +708,7 @@ function saveModal(){
   } else {
     // Wrap initial notes as a log entry if provided
     const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',statusLog:'',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',priority:'',nextSteps:'',createdAt:todayKey()};
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',statusLog:'',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',officeVisitNote:'',siteVisitNote:'',lastActivity:'',priority:'',nextSteps:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
