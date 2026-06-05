@@ -64,6 +64,11 @@ tr:hover td{background:#fafaf8;}
 .outreach-date{font-size:11px;border:1px solid #e0e0de;border-radius:6px;padding:3px 6px;background:#fafaf8;color:#888;width:100%;outline:none;font-family:inherit;margin-top:4px;}
 .outreach-date:focus{border-color:#003DA5;background:#fff;color:#1a1a1a;}
 .note-sent-label{font-weight:600;color:#1a1a1a;}
+.fp-btn{font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:1px solid #e0e0de;background:#f5f5f3;color:#aaa;cursor:pointer;}
+.fp-btn.on-now{background:#D4A017;color:#fff;border-color:#D4A017;}
+.fp-btn.on-high{background:#C0392B;color:#fff;border-color:#C0392B;}
+.fp-btn.on-med{background:#F9E04B;color:#5a4a00;border-color:#c8b800;}
+.fp-btn.on-low{background:#bbb;color:#fff;border-color:#bbb;}
 .priority-sel-now{background:#D4A017;color:#fff;font-weight:700;}
 .priority-sel-high{background:#C0392B;color:#fff;font-weight:700;}
 .priority-sel-med{background:#F9E04B;color:#5a4a00;font-weight:600;}
@@ -89,6 +94,8 @@ tr:hover td{background:#fafaf8;}
 .lb-none{background:#F1EFE8;color:#5F5E5A;}
 .lb-contacted{background:#FAEEDA;color:#633806;}
 .lb-visited{background:#E6F1FB;color:#0C447C;}
+.lb-replied{background:#EEEDFE;color:#3C3489;}
+.lb-office-visit{background:#FBE8F3;color:#7A1C58;}
 .lb-meeting{background:#E1F5EE;color:#085041;}
 .lb-approved{background:#EAF3DE;color:#27500A;}
 .day-group{margin-bottom:1.25rem;}
@@ -125,6 +132,10 @@ tr:hover td{background:#fafaf8;}
 .note-text{font-size:12px;color:#1a1a1a;line-height:1.45;word-break:break-word;width:100%;}
 .note-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:14px;padding:0;line-height:1;flex-shrink:0;margin-top:1px;}
 .note-del:hover{color:#A32D2D;}
+.note-check{background:none;border:none;cursor:pointer;color:#ddd;font-size:13px;padding:0;line-height:1;flex-shrink:0;margin-top:1px;}
+.note-check:hover{color:#2e7d32;}
+.note-done .note-text{text-decoration:line-through;color:#bbb;}
+.note-done .note-ts{color:#ddd;}
 .note-add{margin-top:5px;width:100%;}
 .note-add input{font-size:12px;border:1px solid #e0e0de;border-radius:6px;padding:5px 8px;width:100%;background:#fafaf8;outline:none;font-family:inherit;color:#1a1a1a;}
 .note-add input:focus{border-color:#003DA5;background:#fff;}
@@ -262,17 +273,16 @@ tr:hover td{background:#fafaf8;}
           <option value="">All statuses</option>
           <option value="none">Not contacted</option>
           <option value="contacted">Contacted</option>
-          <option value="visited">Site visited</option>
+          <option value="replied">Received Reply</option>
+          <option value="visited">Site visit</option>
+          <option value="office_visit">Office Visit</option>
           <option value="meeting">Meeting set</option>
           <option value="approved">Approved vendor</option>
         </select>
-        <select id="f-priority" onchange="render()">
-          <option value="">All priorities</option>
-          <option value="now">Now</option>
-          <option value="high">High</option>
-          <option value="med">Med</option>
-          <option value="low">Low</option>
-        </select>
+        <button class="fp-btn" onclick="togglePF('now',this)">Now</button>
+        <button class="fp-btn" onclick="togglePF('high',this)">High</button>
+        <button class="fp-btn" onclick="togglePF('med',this)">Med</button>
+        <button class="fp-btn" onclick="togglePF('low',this)">Low</button>
         <select id="f-rep" onchange="render()">
           <option value="">All reps</option>
         </select>
@@ -283,7 +293,7 @@ tr:hover td{background:#fafaf8;}
         <table>
           <colgroup>
             <col style="width:210px">
-            <col style="width:100px">
+            <col style="width:220px">
             <col style="width:110px">
             <col style="width:210px">
             <col style="width:110px">
@@ -293,7 +303,7 @@ tr:hover td{background:#fafaf8;}
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:200px">
-            <col style="width:120px">
+            <col style="width:200px">
             <col style="width:100px">
             <col style="width:220px">
             <col style="width:36px">
@@ -345,9 +355,9 @@ tr:hover td{background:#fafaf8;}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycby8gbUs3PPRFcwreJ2s5HwDgr65V2xbumY_mAq-m4Un0_QWeu7fMApB2Jjhd7cEYOxVBQ/exec';
 
-const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"visited",label:"Site visited"},{val:"meeting",label:"Meeting set"},{val:"approved",label:"Approved vendor"}];
-const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",visited:"Site visited",meeting:"Meeting set",approved:"Approved vendor"};
-const LB_CLASS={none:"lb-none",contacted:"lb-contacted",visited:"lb-visited",meeting:"lb-meeting",approved:"lb-approved"};
+const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"replied",label:"Received Reply"},{val:"visited",label:"Site visit"},{val:"office_visit",label:"Office Visit"},{val:"meeting",label:"Meeting set"},{val:"approved",label:"Approved vendor"}];
+const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",replied:"Received Reply",visited:"Site visit",office_visit:"Office Visit",meeting:"Meeting set",approved:"Approved vendor"};
+const LB_CLASS={none:"lb-none",contacted:"lb-contacted",replied:"lb-replied",visited:"lb-visited",office_visit:"lb-office-visit",meeting:"lb-meeting",approved:"lb-approved"};
 const CAT_CLASS={Builder:"badge-builder",Supplier:"badge-supplier",Architect:"badge-architect",Realtor:"badge-realtor",Other:"badge-other"};
 const REP_COLORS=[{bg:"#E6F1FB",color:"#0C447C"},{bg:"#E1F5EE",color:"#085041"},{bg:"#EEEDFE",color:"#3C3489"},{bg:"#FAEEDA",color:"#633806"},{bg:"#FAECE7",color:"#712B13"},{bg:"#FBEAF0",color:"#72243E"},{bg:"#EAF3DE",color:"#27500A"},{bg:"#F1EFE8",color:"#444441"}];
 
@@ -376,6 +386,19 @@ function renderLogHtml(entries,appendCmd,delCmd){
   const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="${delCmd.replace('IDX',i)}" title="Delete entry">×</button></div>`).join('');
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){${appendCmd};}"/></div></div>`;
 }
+function renderNextStepsHtml(id,entries){
+  const rows=entries.map((e,i)=>{const done=e.text.startsWith('[DONE] ');const displayText=done?e.text.slice(7):e.text;return`<div class="note-entry${done?' note-done':''}"><div class="note-body"><span class="note-text">${esc(displayText)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-check" onclick="checkContactNote('${id}','nextSteps',${i})" title="Mark done">✓</button><button class="note-del" onclick="deleteContactNote('${id}','nextSteps',${i})" title="Delete">×</button></div>`;}).join('');
+  return`<div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Next Steps</div><div class="notes-log">${rows}<div class="note-add"><input placeholder="Next step…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${id}',this,'nextSteps');}"/></div></div>`;
+}
+function checkContactNote(id,field,idx){
+  const c=getC(id);if(!c)return;
+  const entries=parseNotes(c[field]||'');
+  if(!entries[idx])return;
+  const t=entries[idx].text;
+  entries[idx].text=t.startsWith('[DONE] ')?t.slice(7):'[DONE] '+t;
+  c[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
+  queueSave(id);render();
+}
 function deleteContactNote(id,field,idx){
   const c=getC(id);const entries=parseNotes(c[field]);
   entries.splice(idx,1);
@@ -384,7 +407,7 @@ function deleteContactNote(id,field,idx){
 }
 const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:'background:#C0392B;color:#fff;font-weight:700;',med:'background:#F9E04B;color:#5a4a00;font-weight:600;',low:'background:#bbb;color:#fff;font-weight:600;'};
 function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
-function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);setSyncStatus('saving');apiPost({action:'saveNewContact',data:c}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));}
+function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);render();}
 function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
 function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
@@ -407,6 +430,7 @@ let activity=[];
 let saveQueue={};
 let saveTimer=null;
 let editingId=null;
+let activePF=new Set();
 
 function setSyncStatus(s){
   const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-label');
@@ -478,7 +502,26 @@ function setContactField(id,ci,field,v){
   if(v.trim()!==old.trim())addAct(c.company,'contact',`${field}: ${v}`,c.rep);
   queueSave(id);
 }
-function setStatus(id,v){setField(id,'status',v);}
+function setStatus(id,v){
+  const c=getC(id);if(!c)return;
+  c.status=v;
+  const entry=`[${fmtNoteTs()}] ${STATUS_LABEL[v]||v}`;
+  c.statusLog=c.statusLog?c.statusLog+'\n'+entry:entry;
+  if(v)addAct(c.company,'status',v,c.rep);
+  queueSave(id);render();
+}
+function renderStatusLog(id,entries){
+  if(!entries.length)return'';
+  const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteStatusEntry('${id}',${i})" title="Delete">×</button></div>`).join('');
+  return`<div style="margin-top:5px;"><div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">History</div><div class="notes-log">${rows}</div></div>`;
+}
+function deleteStatusEntry(id,idx){
+  const c=getC(id);if(!c)return;
+  const entries=parseNotes(c.statusLog||'');
+  entries.splice(idx,1);
+  c.statusLog=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
+  queueSave(id);render();
+}
 function setDate(id,v){setField(id,'visitDate',v);}
 function setRep(id,v){setField(id,'rep',v);render();}
 function setEmailDate(id,v){setField(id,'emailDate',v);render();}
@@ -499,7 +542,7 @@ function updateStats(){
   const n=contacts.length;
   document.getElementById('s-total').textContent=n;
   document.getElementById('s-none').textContent=contacts.filter(c=>c.status==='none'||!c.status).length;
-  document.getElementById('s-prog').textContent=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  document.getElementById('s-prog').textContent=contacts.filter(c=>['contacted','replied','visited','office_visit'].includes(c.status)).length;
   document.getElementById('s-done').textContent=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
 }
 
@@ -542,20 +585,24 @@ function renderOutreachCell(c,type){
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'${field}');}"/></div></div>`;
 }
 
+function togglePF(val,btn){
+  if(activePF.has(val)){activePF.delete(val);btn.className='fp-btn';}
+  else{activePF.add(val);btn.className=`fp-btn on-${val}`;}
+  render();
+}
 function render(){
   const search=document.getElementById('search').value.toLowerCase();
   const fcat=document.getElementById('f-cat').value;
   const fs=document.getElementById('f-status').value;
-  const fp=document.getElementById('f-priority').value;
   const fr=document.getElementById('f-rep').value;
   const filtered=contacts.filter(c=>{
     if(fcat&&c.category!==fcat)return false;
     const status=c.status||'none';
     if(fs&&status!==fs)return false;
-    if(fp&&(c.priority||'')!==fp)return false;
+    if(activePF.size>0&&!activePF.has(c.priority||''))return false;
     if(fr==='__none__'&&c.rep)return false;
     if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
-    if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
+    if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,c.nextSteps||'',...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
     return true;
   });
 
@@ -582,6 +629,7 @@ function render(){
           <option value="med" ${(c.priority||'')==='med'?'selected':''}>Med</option>
           <option value="low" ${(c.priority||'')==='low'?'selected':''}>Low</option>
         </select>
+        <div style="margin-top:5px;">${renderNextStepsHtml(c.id,parseNotes(c.nextSteps||''))}</div>
       </td>
       <td><input class="ei" value="${esc(c.zone)}" placeholder="Zone / area" onblur="setField('${c.id}','zone',this.value)" style="font-size:11px;color:#888;"/></td>
       <td>${renderContactsCell(c)}</td>
@@ -598,7 +646,7 @@ function render(){
       <td>${renderOutreachCell(c,'email')}</td>
       <td>${renderOutreachCell(c,'li')}</td>
       <td>${renderLogHtml(parseNotes(c.siteVisitNote||''),`appendContactNote('${c.id}',this,'siteVisitNote')`,`deleteContactNote('${c.id}','siteVisitNote',IDX)`)}</td>
-      <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select></td>
+      <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select>${renderStatusLog(c.id,parseNotes(c.statusLog||''))}</td>
       <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
       <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
       <td>
@@ -648,7 +696,7 @@ function saveModal(){
   } else {
     // Wrap initial notes as a log entry if provided
     const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',priority:'',createdAt:todayKey()};
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',statusLog:'',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',siteVisitNote:'',lastActivity:'',priority:'',nextSteps:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
@@ -674,7 +722,7 @@ function renderReport(){
   const todayCount=(grouped[todayKey()]||{entries:[]}).entries.length;
   const touched=new Set(activity.map(a=>a.builder)).size;
   const none=contacts.filter(c=>!c.status||c.status==='none').length;
-  const prog=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  const prog=contacts.filter(c=>['contacted','replied','visited','office_visit'].includes(c.status)).length;
   const done=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
   const emailSent=contacts.filter(c=>c.emailDate).length;
   const liSent=contacts.filter(c=>c.liDate).length;
@@ -705,7 +753,7 @@ function copyReport(){
   const days=Object.keys(grouped).sort().reverse();
   const todayCount=(grouped[todayKey()]||{entries:[]}).entries.length;
   const none=contacts.filter(c=>!c.status||c.status==='none').length;
-  const prog=contacts.filter(c=>['contacted','visited'].includes(c.status)).length;
+  const prog=contacts.filter(c=>['contacted','replied','visited','office_visit'].includes(c.status)).length;
   const done=contacts.filter(c=>['meeting','approved'].includes(c.status)).length;
   const emailSent=contacts.filter(c=>c.emailDate).length;
   const liSent=contacts.filter(c=>c.liDate).length;
