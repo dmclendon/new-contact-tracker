@@ -70,6 +70,7 @@ tr:hover td{background:#fafaf8;}
 .fp-btn.on-high{background:#C0392B;color:#fff;border-color:#C0392B;}
 .fp-btn.on-med{background:#F9E04B;color:#5a4a00;border-color:#c8b800;}
 .fp-btn.on-low{background:#bbb;color:#fff;border-color:#bbb;}
+.fp-btn.on-zone{background:#1a6b3a;color:#fff;border-color:#1a6b3a;}
 .priority-sel-now{background:#D4A017;color:#fff;font-weight:700;}
 .priority-sel-high{background:#C0392B;color:#fff;font-weight:700;}
 .priority-sel-med{background:#F9E04B;color:#5a4a00;font-weight:600;}
@@ -287,6 +288,7 @@ tr:hover td{background:#fafaf8;}
         <select id="f-rep" onchange="render()">
           <option value="">All reps</option>
         </select>
+        <div id="zone-btns" style="display:contents;"></div>
         <button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add contact</button>
       </div>
       <div class="edit-hint"><i class="ti ti-pencil" style="font-size:12px;"></i> Click any field to edit inline — all changes save live to the shared Google Sheet.</div>
@@ -441,6 +443,18 @@ let saveQueue={};
 let saveTimer=null;
 let editingId=null;
 let activePF=new Set();
+const activeZF=new Set();
+function toggleZF(val,btn){
+  if(activeZF.has(val)){activeZF.delete(val);btn.className='fp-btn fz-btn';}
+  else{activeZF.add(val);btn.className='fp-btn fz-btn on-zone';}
+  render();
+}
+function buildZoneButtons(){
+  const zones=[...new Set(contacts.map(c=>c.zone).filter(z=>z&&z.trim()))].sort();
+  const container=document.getElementById('zone-btns');
+  if(!container)return;
+  container.innerHTML=zones.map(z=>`<button class="fp-btn fz-btn${activeZF.has(z)?' on-zone':''}" onclick="toggleZF(${JSON.stringify(z)},this)">${z}</button>`).join('');
+}
 
 function setSyncStatus(s){
   const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-label');
@@ -471,7 +485,7 @@ async function loadAll(){
     }
   });
   document.getElementById('loading').style.display='none';
-  render();updateStats();populateRepFilter();
+  render();updateStats();populateRepFilter();buildZoneButtons();
 }
 
 function getC(id){return contacts.find(c=>c.id===id);}
@@ -625,6 +639,7 @@ function render(){
     const status=c.status||'none';
     if(fs&&status!==fs)return false;
     if(activePF.size>0&&!activePF.has(c.priority||''))return false;
+    if(activeZF.size>0&&!activeZF.has(c.zone||''))return false;
     if(fr==='__none__'&&c.rep)return false;
     if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
     if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,c.nextSteps||'',...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
