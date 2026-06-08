@@ -306,7 +306,8 @@ tr:hover td{background:#fafaf8;}
             <col style="width:200px">
             <col style="width:200px">
             <col style="width:200px">
-            <col style="width:100px">
+            <col style="width:200px">
+            <col style="width:160px">
             <col style="width:220px">
             <col style="width:36px">
           </colgroup>
@@ -324,6 +325,7 @@ tr:hover td{background:#fafaf8;}
               <th class="th-li"><i class="ti ti-brand-linkedin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>LinkedIn outreach</th>
               <th><i class="ti ti-building" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Office visits</th>
               <th><i class="ti ti-map-pin" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Site visits</th>
+              <th><i class="ti ti-phone" style="font-size:11px;vertical-align:-1px;margin-right:3px;"></i>Phone calls</th>
               <th>Status</th>
               <th>Last activity</th>
               <th>General notes</th>
@@ -412,14 +414,14 @@ const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:
 function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
 function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);render();}
 function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
-const OUTREACH_LABEL={emailNote:'Email outreach',liNote:'LinkedIn outreach',officeVisitNote:'Office visit',siteVisitNote:'Site visit'};
+const OUTREACH_LABEL={emailNote:'Email outreach',liNote:'LinkedIn outreach',officeVisitNote:'Office visit',siteVisitNote:'Site visit',phoneNote:'Phone call'};
 function appendContactNote(id,inputEl,field){
   const text=inputEl.value.trim();if(!text)return;
   const c=getC(id);
   const ts=fmtNoteTs();
   const entry=`[${ts}] ${text}`;
   c[field]=c[field]?c[field]+'\n'+entry:entry;
-  if(['emailNote','liNote','officeVisitNote','siteVisitNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
+  if(['emailNote','liNote','officeVisitNote','siteVisitNote','phoneNote','notes'].includes(field))c.lastActivity=new Date().toISOString();
   if(OUTREACH_LABEL[field]){const sEntry=`[${ts}] ${OUTREACH_LABEL[field]}: ${text}`;c.statusLog=c.statusLog?c.statusLog+'\n'+sEntry:sEntry;}
   inputEl.value='';
   queueSave(id);
@@ -428,6 +430,7 @@ function appendContactNote(id,inputEl,field){
   else if(field==='liNote')addAct(c.company,'liNote',text,c.rep);
   else if(field==='officeVisitNote')addAct(c.company,'officeVisitNote',text,c.rep);
   else if(field==='siteVisitNote')addAct(c.company,'siteVisitNote',text,c.rep);
+  else if(field==='phoneNote')addAct(c.company,'phoneNote',text,c.rep);
   render();
 }
 
@@ -462,7 +465,7 @@ async function loadAll(){
   restoreLocalAnnotations();
   // Backfill Jun 3 2026 for any existing entries that have outreach/visit data but no lastActivity
   contacts.forEach(c=>{
-    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.officeVisitNote||c.siteVisitNote||c.notes)){
+    if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.officeVisitNote||c.siteVisitNote||c.phoneNote||c.notes)){
       c.lastActivity=new Date(2026,5,3,12,0,0).toISOString();
       queueSave(c.id);
     }
@@ -597,6 +600,16 @@ function renderOutreachCell(c,type){
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'${field}');}"/></div></div>`;
 }
 
+function renderSiteVisitCell(c){
+  const noteEntries=parseNotes(c.siteVisitNote||'');
+  const rows=noteEntries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteContactNote('${c.id}','siteVisitNote',${i})" title="Delete entry">×</button></div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'siteVisitNote');}"/></div></div>`;
+}
+function renderPhoneCallCell(c){
+  const noteEntries=parseNotes(c.phoneNote||'');
+  const rows=noteEntries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteContactNote('${c.id}','phoneNote',${i})" title="Delete entry">×</button></div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${c.id}',this,'phoneNote');}"/></div></div>`;
+}
 function togglePF(val,btn){
   if(activePF.has(val)){activePF.delete(val);btn.className='fp-btn';}
   else{activePF.add(val);btn.className=`fp-btn on-${val}`;}
@@ -658,7 +671,8 @@ function render(){
       <td>${renderOutreachCell(c,'email')}</td>
       <td>${renderOutreachCell(c,'li')}</td>
       <td>${renderLogHtml(parseNotes(c.officeVisitNote||''),`appendContactNote('${c.id}',this,'officeVisitNote')`,`deleteContactNote('${c.id}','officeVisitNote',IDX)`)}</td>
-      <td>${renderLogHtml(parseNotes(c.siteVisitNote||''),`appendContactNote('${c.id}',this,'siteVisitNote')`,`deleteContactNote('${c.id}','siteVisitNote',IDX)`)}</td>
+      <td>${renderSiteVisitCell(c)}</td>
+      <td>${renderPhoneCallCell(c)}</td>
       <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select>${renderStatusLog(c.id,parseNotes(c.statusLog||''))}</td>
       <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
       <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
@@ -709,7 +723,7 @@ function saveModal(){
   } else {
     // Wrap initial notes as a log entry if provided
     const initNotes=rawNotes?`[${fmtNoteTs()}] ${rawNotes}`:'';
-    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',statusLog:'',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',officeVisitNote:'',siteVisitNote:'',lastActivity:'',priority:'',nextSteps:'',createdAt:todayKey()};
+    const newC={id:uid(),company,category:document.getElementById('m-category').value,zone:document.getElementById('m-zone').value.trim(),address:document.getElementById('m-address').value.trim(),website:document.getElementById('m-website').value.trim(),lots:lotsVal===''?null:parseInt(lotsVal),source:document.getElementById('m-source').value.trim(),contacts:[contact],notes:initNotes,status:'none',statusLog:'',rep:'',visitDate:'',emailDate:'',emailNote:'',liDate:'',liNote:'',officeVisitNote:'',siteVisitNote:'',phoneNote:'',lastActivity:'',priority:'',nextSteps:'',createdAt:todayKey()};
     contacts.push(newC);
     addAct(company,'status','none','');
     apiPost({action:'saveNewContact',data:newC}).then(()=>setSyncStatus('ok')).catch(()=>setSyncStatus('error'));
