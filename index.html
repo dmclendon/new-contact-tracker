@@ -239,7 +239,7 @@ tr:hover td{background:#fafaf8;}
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Connecting…</span>
     </div>
-    <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    <button class="btn" onclick="printView()"><i class="ti ti-printer"></i> Print</button>
     <button class="btn btn-primary" onclick="switchTab('report')"><i class="ti ti-chart-bar"></i> Activity Report</button>
   </div>
 </div>
@@ -806,6 +806,27 @@ function switchTab(tab){
 }
 
 loadAll();
+</script>
+
+<script>
+function printView(){
+  const filtered=Array.from(document.querySelectorAll('#tbody tr'));
+  if(!filtered.length){alert('No rows to print.');return;}
+  const headers=Array.from(document.querySelectorAll('thead th')).map(th=>th.innerText.trim());
+  let tableHtml='<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:11px;font-family:sans-serif;">';
+  tableHtml+='<thead style="background:#1a6b3a;color:#fff;"><tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr></thead>';
+  tableHtml+='<tbody>';
+  filtered.forEach(row=>{
+    const cells=Array.from(row.querySelectorAll('td'));
+    tableHtml+='<tr>'+cells.map(td=>`<td style="vertical-align:top;padding:4px 6px;">${td.innerText.trim()}</td>`).join('')+'</tr>';
+  });
+  tableHtml+='</tbody></table>';
+  const win=window.open('','_blank','width=1200,height=800');
+  win.document.write(`<!DOCTYPE html><html><head><title>New Contact Tracker — Print</title><style>body{font-family:sans-serif;padding:16px;}h2{margin-bottom:8px;}table{page-break-inside:auto;}tr{page-break-inside:avoid;}</style></head><body><h2>Aidan's Home Services — New Contact Tracker</h2><p style="font-size:11px;color:#888;margin-bottom:12px;">Printed ${new Date().toLocaleString()} &nbsp;|&nbsp; ${filtered.length} contact(s)</p>${tableHtml}</body></html>`);
+  win.document.close();
+  win.focus();
+  win.print();
+}
 </script>
 </body>
 </html>
