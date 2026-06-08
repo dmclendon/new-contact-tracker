@@ -825,22 +825,73 @@ loadAll();
 
 <script>
 function printView(){
-  const filtered=Array.from(document.querySelectorAll('#tbody tr'));
+  // Re-apply current filters to get the same contacts shown on screen
+  const search=document.getElementById('search').value.toLowerCase();
+  const fcat=document.getElementById('f-cat').value;
+  const fs=document.getElementById('f-status').value;
+  const fr=document.getElementById('f-rep').value;
+  const filtered=contacts.filter(c=>{
+    if(fcat&&c.category!==fcat)return false;
+    const status=c.status||'none';
+    if(fs&&status!==fs)return false;
+    if(activePF.size>0&&!activePF.has(c.priority||''))return false;
+    if(activeZF.size>0&&!activeZF.has(c.zone||''))return false;
+    if(fr==='__none__'&&c.rep)return false;
+    if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
+    if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,c.nextSteps||'',...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
+    return true;
+  });
   if(!filtered.length){alert('No rows to print.');return;}
-  const headers=Array.from(document.querySelectorAll('thead th')).map(th=>th.innerText.trim());
-  let tableHtml='<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:11px;font-family:sans-serif;">';
-  tableHtml+='<thead style="background:#1a6b3a;color:#fff;"><tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr></thead>';
-  tableHtml+='<tbody>';
-  filtered.forEach(row=>{
-    const cells=Array.from(row.querySelectorAll('td'));
-    tableHtml+='<tr>'+cells.map(td=>`<td style="vertical-align:top;padding:4px 6px;">${td.innerText.trim()}</td>`).join('')+'</tr>';
+
+  const statusLabel=v=>(STATUS_OPTS.find(o=>o.val===v)||{label:v||'—'}).label;
+  const priorityLabel=v=>({now:'Now',high:'High',med:'Med',low:'Low'}[v]||v||'—');
+  const notesText=raw=>parseNotes(raw||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—';
+
+  const cols=[
+    {h:'Company',       v:c=>c.company||'—'},
+    {h:'Category',      v:c=>c.category||'—'},
+    {h:'Priority',      v:c=>priorityLabel(c.priority)},
+    {h:'Zone / Area',   v:c=>c.zone||'—'},
+    {h:'Contacts',      v:c=>(c.contacts||[]).map(ct=>[ct.name,ct.title,ct.phone,ct.email].filter(Boolean).join(' | ')).join('\n')||'—'},
+    {h:'Met Where',     v:c=>c.source||'—'},
+    {h:'Address / Website', v:c=>[c.address,c.website].filter(Boolean).join('\n')||'—'},
+    {h:'Vacant Lots',   v:c=>c.lots!=null?c.lots:'—'},
+    {h:'Assigned Rep',  v:c=>c.rep||'—'},
+    {h:'Status',        v:c=>statusLabel(c.status)},
+    {h:'Last Activity', v:c=>{const d=c.lastActivity;return d?new Date(d).toLocaleDateString():'—';}},
+    {h:'Email Outreach',v:c=>{const d=c.emailDate?new Date(c.emailDate).toLocaleDateString():'';return d?(d+(c.emailNote?'\n'+notesText(c.emailNote):'')):(c.emailNote?notesText(c.emailNote):'—');}},
+    {h:'LinkedIn Outreach',v:c=>{const d=c.liDate?new Date(c.liDate).toLocaleDateString():'';return d?(d+(c.liNote?'\n'+notesText(c.liNote):'')):(c.liNote?notesText(c.liNote):'—');}},
+    {h:'Office Visits',  v:c=>notesText(c.officeVisitNote)},
+    {h:'Site Visits',    v:c=>notesText(c.siteVisitNote)},
+    {h:'Phone Calls',    v:c=>notesText(c.phoneNote)},
+    {h:'Next Steps',     v:c=>c.nextSteps||'—'},
+    {h:'General Notes',  v:c=>notesText(c.notes)},
+  ];
+
+  const esc2=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  let tableHtml='<table><thead><tr>'+cols.map(c=>`<th>${esc2(c.h)}</th>`).join('')+'</tr></thead><tbody>';
+  filtered.forEach(c=>{
+    tableHtml+='<tr>'+cols.map(col=>`<td>${esc2(col.v(c))}</td>`).join('')+'</tr>';
   });
   tableHtml+='</tbody></table>';
-  const win=window.open('','_blank','width=1200,height=800');
-  win.document.write(`<!DOCTYPE html><html><head><title>New Contact Tracker — Print</title><style>body{font-family:sans-serif;padding:16px;}h2{margin-bottom:8px;}table{page-break-inside:auto;}tr{page-break-inside:avoid;}</style></head><body><h2>Aidan's Home Services — New Contact Tracker</h2><p style="font-size:11px;color:#888;margin-bottom:12px;">Printed ${new Date().toLocaleString()} &nbsp;|&nbsp; ${filtered.length} contact(s)</p>${tableHtml}</body></html>`);
+
+  const win=window.open('','_blank','width=1400,height=900');
+  win.document.write(`<!DOCTYPE html><html><head><title>New Contact Tracker — Print</title><style>
+    body{font-family:sans-serif;padding:16px;font-size:11px;}
+    h2{margin-bottom:4px;color:#1a6b3a;}
+    p.meta{font-size:10px;color:#888;margin-bottom:12px;}
+    table{border-collapse:collapse;width:100%;}
+    th{background:#1a6b3a;color:#fff;text-align:left;padding:5px 7px;font-size:10px;white-space:nowrap;}
+    td{border:1px solid #ddd;padding:4px 7px;vertical-align:top;white-space:pre-wrap;word-break:break-word;}
+    tr:nth-child(even) td{background:#f3f9f5;}
+    @media print{@page{size:landscape;margin:1cm;}}
+  </style></head><body>
+  <h2>Aidan's Home Services — New Contact Tracker</h2>
+  <p class="meta">Printed ${new Date().toLocaleString()} &nbsp;|&nbsp; ${filtered.length} contact(s)</p>
+  ${tableHtml}
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
   win.document.close();
-  win.focus();
-  win.print();
 }
 </script>
 </body>
