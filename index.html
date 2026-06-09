@@ -113,6 +113,22 @@ tr:hover td{background:#fafaf8;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;z-index:9999;opacity:0;transition:opacity .3s;}
 .toast.show{opacity:1;}
+/* ── Print column picker ── */
+.print-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:flex;align-items:center;justify-content:center;}
+.print-dialog{background:#fff;border-radius:12px;padding:24px 28px;width:520px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18);}
+.print-dialog h3{margin:0 0 4px;font-size:15px;color:#1a6b3a;}
+.print-dialog p{margin:0 0 16px;font-size:12px;color:#888;}
+.print-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:18px;}
+.print-col-grid label{display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;user-select:none;}
+.print-col-grid input[type=checkbox]{width:14px;height:14px;accent-color:#1a6b3a;cursor:pointer;flex-shrink:0;}
+.print-dialog-actions{display:flex;gap:8px;justify-content:flex-end;}
+.print-dialog-actions button{font-size:12px;padding:7px 18px;border-radius:7px;border:none;cursor:pointer;}
+.btn-print-go{background:#1a6b3a;color:#fff;}
+.btn-print-go:hover{background:#145430;}
+.btn-print-cancel{background:#f0f0ee;color:#333;}
+.btn-print-cancel:hover{background:#e0e0de;}
+.print-toggle-row{display:flex;gap:8px;margin-bottom:10px;}
+.print-toggle-row button{font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid #ddd;background:#fafaf8;cursor:pointer;color:#555;}
 .add-row-bar{padding:12px 16px;border-top:1px solid #f0f0ee;background:#fafaf8;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
 .modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
@@ -151,6 +167,23 @@ tr:hover td{background:#fafaf8;}
   <div style="font-size:13px;color:#888;">Loading contacts…</div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- Print column picker -->
+<div class="print-overlay" id="print-overlay" style="display:none;" onclick="if(event.target===this)closePrintDialog()">
+  <div class="print-dialog">
+    <h3>Choose columns to print</h3>
+    <p>Uncheck any columns you want to leave out.</p>
+    <div class="print-toggle-row">
+      <button onclick="setPrintAll(true)">Select all</button>
+      <button onclick="setPrintAll(false)">Deselect all</button>
+    </div>
+    <div class="print-col-grid" id="print-col-grid"></div>
+    <div class="print-dialog-actions">
+      <button class="btn-print-cancel" onclick="closePrintDialog()">Cancel</button>
+      <button class="btn-print-go" onclick="executePrint()">Print</button>
+    </div>
+  </div>
+</div>
 
 <!-- ADD / EDIT MODAL -->
 <div class="modal-overlay" id="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal()">
@@ -824,8 +857,40 @@ loadAll();
 </script>
 
 <script>
+const PRINT_COLS=[
+  {h:'Company',           v:c=>c.company||'—'},
+  {h:'Category',          v:c=>c.category||'—'},
+  {h:'Priority',          v:c=>({now:'Now',high:'High',med:'Med',low:'Low'}[c.priority]||c.priority||'—')},
+  {h:'Zone / Area',       v:c=>c.zone||'—'},
+  {h:'Contacts',          v:c=>(c.contacts||[]).map(ct=>[ct.name,ct.title,ct.phone,ct.email].filter(Boolean).join(' | ')).join('\n')||'—'},
+  {h:'Met Where',         v:c=>c.source||'—'},
+  {h:'Address / Website', v:c=>[c.address,c.website].filter(Boolean).join('\n')||'—'},
+  {h:'Vacant Lots',       v:c=>c.lots!=null?c.lots:'—'},
+  {h:'Assigned Rep',      v:c=>c.rep||'—'},
+  {h:'Status',            v:c=>(STATUS_OPTS.find(o=>o.val===c.status)||{label:c.status||'—'}).label},
+  {h:'Last Activity',     v:c=>{const d=c.lastActivity;return d?new Date(d).toLocaleDateString():'—';}},
+  {h:'Email Outreach',    v:c=>{const nt=raw=>parseNotes(raw||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n');const d=c.emailDate?new Date(c.emailDate).toLocaleDateString():'';return d?(d+(c.emailNote?'\n'+nt(c.emailNote):'')):(c.emailNote?nt(c.emailNote):'—');}},
+  {h:'LinkedIn Outreach', v:c=>{const nt=raw=>parseNotes(raw||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n');const d=c.liDate?new Date(c.liDate).toLocaleDateString():'';return d?(d+(c.liNote?'\n'+nt(c.liNote):'')):(c.liNote?nt(c.liNote):'—');}},
+  {h:'Office Visits',     v:c=>parseNotes(c.officeVisitNote||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
+  {h:'Site Visits',       v:c=>parseNotes(c.siteVisitNote||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
+  {h:'Phone Calls',       v:c=>parseNotes(c.phoneNote||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
+  {h:'Next Steps',        v:c=>c.nextSteps||'—'},
+  {h:'General Notes',     v:c=>parseNotes(c.notes||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
+];
+const printColEnabled=Object.fromEntries(PRINT_COLS.map(c=>[c.h,true]));
+
 function printView(){
-  // Re-apply current filters to get the same contacts shown on screen
+  const grid=document.getElementById('print-col-grid');
+  grid.innerHTML=PRINT_COLS.map(c=>`<label><input type="checkbox" onchange="printColEnabled[${JSON.stringify(c.h)}]=this.checked" ${printColEnabled[c.h]?'checked':''}> ${c.h}</label>`).join('');
+  document.getElementById('print-overlay').style.display='flex';
+}
+function closePrintDialog(){document.getElementById('print-overlay').style.display='none';}
+function setPrintAll(on){
+  PRINT_COLS.forEach(c=>printColEnabled[c.h]=on);
+  document.querySelectorAll('#print-col-grid input').forEach(cb=>cb.checked=on);
+}
+function executePrint(){
+  closePrintDialog();
   const search=document.getElementById('search').value.toLowerCase();
   const fcat=document.getElementById('f-cat').value;
   const fs=document.getElementById('f-status').value;
@@ -842,39 +907,12 @@ function printView(){
     return true;
   });
   if(!filtered.length){alert('No rows to print.');return;}
-
-  const statusLabel=v=>(STATUS_OPTS.find(o=>o.val===v)||{label:v||'—'}).label;
-  const priorityLabel=v=>({now:'Now',high:'High',med:'Med',low:'Low'}[v]||v||'—');
-  const notesText=raw=>parseNotes(raw||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—';
-
-  const cols=[
-    {h:'Company',       v:c=>c.company||'—'},
-    {h:'Category',      v:c=>c.category||'—'},
-    {h:'Priority',      v:c=>priorityLabel(c.priority)},
-    {h:'Zone / Area',   v:c=>c.zone||'—'},
-    {h:'Contacts',      v:c=>(c.contacts||[]).map(ct=>[ct.name,ct.title,ct.phone,ct.email].filter(Boolean).join(' | ')).join('\n')||'—'},
-    {h:'Met Where',     v:c=>c.source||'—'},
-    {h:'Address / Website', v:c=>[c.address,c.website].filter(Boolean).join('\n')||'—'},
-    {h:'Vacant Lots',   v:c=>c.lots!=null?c.lots:'—'},
-    {h:'Assigned Rep',  v:c=>c.rep||'—'},
-    {h:'Status',        v:c=>statusLabel(c.status)},
-    {h:'Last Activity', v:c=>{const d=c.lastActivity;return d?new Date(d).toLocaleDateString():'—';}},
-    {h:'Email Outreach',v:c=>{const d=c.emailDate?new Date(c.emailDate).toLocaleDateString():'';return d?(d+(c.emailNote?'\n'+notesText(c.emailNote):'')):(c.emailNote?notesText(c.emailNote):'—');}},
-    {h:'LinkedIn Outreach',v:c=>{const d=c.liDate?new Date(c.liDate).toLocaleDateString():'';return d?(d+(c.liNote?'\n'+notesText(c.liNote):'')):(c.liNote?notesText(c.liNote):'—');}},
-    {h:'Office Visits',  v:c=>notesText(c.officeVisitNote)},
-    {h:'Site Visits',    v:c=>notesText(c.siteVisitNote)},
-    {h:'Phone Calls',    v:c=>notesText(c.phoneNote)},
-    {h:'Next Steps',     v:c=>c.nextSteps||'—'},
-    {h:'General Notes',  v:c=>notesText(c.notes)},
-  ];
-
+  const cols=PRINT_COLS.filter(c=>printColEnabled[c.h]);
+  if(!cols.length){alert('Select at least one column.');printView();return;}
   const esc2=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   let tableHtml='<table><thead><tr>'+cols.map(c=>`<th>${esc2(c.h)}</th>`).join('')+'</tr></thead><tbody>';
-  filtered.forEach(c=>{
-    tableHtml+='<tr>'+cols.map(col=>`<td>${esc2(col.v(c))}</td>`).join('')+'</tr>';
-  });
+  filtered.forEach(c=>{tableHtml+='<tr>'+cols.map(col=>`<td>${esc2(col.v(c))}</td>`).join('')+'</tr>';});
   tableHtml+='</tbody></table>';
-
   const win=window.open('','_blank','width=1400,height=900');
   win.document.write(`<!DOCTYPE html><html><head><title>New Contact Tracker — Print</title><style>
     body{font-family:'Arial Narrow',Arial,sans-serif;padding:8px;font-size:8px;line-height:1.3;}
