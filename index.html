@@ -879,24 +879,21 @@ const PRINT_COLS=[
   {h:'Next Steps',        v:c=>c.nextSteps||'—'},
   {h:'General Notes',     v:c=>parseNotes(c.notes||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
 ];
-var printColEnabled=Object.fromEntries(PRINT_COLS.map(c=>[c.h,true]));
-function togglePrintCol(h,checked){printColEnabled[h]=checked;}
-
 function printView(){
   const grid=document.getElementById('print-col-grid');
-  grid.innerHTML=PRINT_COLS.map(c=>`<label><input type="checkbox" onchange="togglePrintCol(${JSON.stringify(c.h)},this.checked)" ${printColEnabled[c.h]?'checked':''}> ${c.h}</label>`).join('');
+  grid.innerHTML=PRINT_COLS.map((c,i)=>`<label><input type="checkbox" data-col-index="${i}" checked> ${c.h}</label>`).join('');
   document.getElementById('print-overlay').style.display='flex';
 }
 function closePrintDialog(){document.getElementById('print-overlay').style.display='none';}
 function setPrintAll(on){
-  PRINT_COLS.forEach(c=>printColEnabled[c.h]=on);
   document.querySelectorAll('#print-col-grid input').forEach(cb=>cb.checked=on);
 }
 function executePrint(){
+  const checkedIndices=new Set([...document.querySelectorAll('#print-col-grid input:checked')].map(cb=>parseInt(cb.dataset.colIndex)));
   closePrintDialog();
   const filtered=lastFiltered;
   if(!filtered.length){alert('No rows to print.');return;}
-  const cols=PRINT_COLS.filter(c=>printColEnabled[c.h]);
+  const cols=PRINT_COLS.filter((_,i)=>checkedIndices.has(i));
   if(!cols.length){alert('Select at least one column.');printView();return;}
   const esc2=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   let tableHtml='<table><thead><tr>'+cols.map(c=>`<th>${esc2(c.h)}</th>`).join('')+'</tr></thead><tbody>';
