@@ -879,11 +879,12 @@ const PRINT_COLS=[
   {h:'Next Steps',        v:c=>c.nextSteps||'—'},
   {h:'General Notes',     v:c=>parseNotes(c.notes||'').map(e=>(e.ts?`[${e.ts}] `:'')+e.text).join('\n')||'—'},
 ];
-const printColEnabled=Object.fromEntries(PRINT_COLS.map(c=>[c.h,true]));
+var printColEnabled=Object.fromEntries(PRINT_COLS.map(c=>[c.h,true]));
+function togglePrintCol(h,checked){printColEnabled[h]=checked;}
 
 function printView(){
   const grid=document.getElementById('print-col-grid');
-  grid.innerHTML=PRINT_COLS.map(c=>`<label><input type="checkbox" onchange="printColEnabled[${JSON.stringify(c.h)}]=this.checked" ${printColEnabled[c.h]?'checked':''}> ${c.h}</label>`).join('');
+  grid.innerHTML=PRINT_COLS.map(c=>`<label><input type="checkbox" onchange="togglePrintCol(${JSON.stringify(c.h)},this.checked)" ${printColEnabled[c.h]?'checked':''}> ${c.h}</label>`).join('');
   document.getElementById('print-overlay').style.display='flex';
 }
 function closePrintDialog(){document.getElementById('print-overlay').style.display='none';}
