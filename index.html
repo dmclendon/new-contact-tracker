@@ -476,6 +476,7 @@ let saveQueue={};
 let saveTimer=null;
 let editingId=null;
 let activePF=new Set();
+let lastFiltered=[];
 const activeZF=new Set();
 function toggleZF(val,btn){
   if(activeZF.has(val)){activeZF.delete(val);btn.className='fp-btn fz-btn';}
@@ -667,7 +668,7 @@ function render(){
   const fcat=document.getElementById('f-cat').value;
   const fs=document.getElementById('f-status').value;
   const fr=document.getElementById('f-rep').value;
-  const filtered=contacts.filter(c=>{
+  lastFiltered=contacts.filter(c=>{
     if(fcat&&c.category!==fcat)return false;
     const status=c.status||'none';
     if(fs&&status!==fs)return false;
@@ -678,6 +679,7 @@ function render(){
     if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,c.nextSteps||'',...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
     return true;
   });
+  const filtered=lastFiltered;
 
   if(!filtered.length){
     document.getElementById('tbody').innerHTML=`<tr><td colspan="14"><div class="empty-table"><i class="ti ti-user-plus"></i><p>${contacts.length?'No contacts match your filters.':'No contacts yet — click "Add contact" to get started.'}</p>${!contacts.length?`<button class="btn btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> Add your first contact</button>`:''}</div></td></tr>`;
@@ -891,21 +893,7 @@ function setPrintAll(on){
 }
 function executePrint(){
   closePrintDialog();
-  const search=document.getElementById('search').value.toLowerCase();
-  const fcat=document.getElementById('f-cat').value;
-  const fs=document.getElementById('f-status').value;
-  const fr=document.getElementById('f-rep').value;
-  const filtered=contacts.filter(c=>{
-    if(fcat&&c.category!==fcat)return false;
-    const status=c.status||'none';
-    if(fs&&status!==fs)return false;
-    if(activePF.size>0&&!activePF.has(c.priority||''))return false;
-    if(activeZF.size>0&&!activeZF.has(c.zone||''))return false;
-    if(fr==='__none__'&&c.rep)return false;
-    if(fr&&fr!=='__none__'&&c.rep!==fr)return false;
-    if(search){const hay=[c.company,c.zone,c.source,c.address,c.website,c.nextSteps||'',...(c.contacts||[]).map(ct=>[ct.name,ct.email,ct.phone,ct.linkedin,ct.title].join(' '))].join(' ').toLowerCase();if(!hay.includes(search))return false;}
-    return true;
-  });
+  const filtered=lastFiltered;
   if(!filtered.length){alert('No rows to print.');return;}
   const cols=PRINT_COLS.filter(c=>printColEnabled[c.h]);
   if(!cols.length){alert('Select at least one column.');printView();return;}
