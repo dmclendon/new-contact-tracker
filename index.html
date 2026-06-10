@@ -513,6 +513,8 @@ async function loadAll(){
     setSyncStatus('error');showToast('Could not connect — working offline');
   }
   restoreLocalAnnotations();
+  // Backfill siteAddresses for older contacts
+  contacts.forEach(c=>{if(!Array.isArray(c.siteAddresses))c.siteAddresses=[];});
   // Backfill Jun 3 2026 for any existing entries that have outreach/visit data but no lastActivity
   contacts.forEach(c=>{
     if(!(c.lastActivity)&&(c.emailNote||c.liNote||c.officeVisitNote||c.siteVisitNote||c.phoneNote||c.notes)){
