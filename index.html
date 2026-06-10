@@ -354,7 +354,7 @@ tr:hover td{background:#fafaf8;}
               <th>Zone / area</th>
               <th>Contacts</th>
               <th>Met where</th>
-              <th>Address / website</th>
+              <th>Primary office address / website</th>
               <th>Site addresses</th>
               <th>Vacant Dev. Lots</th>
               <th>Assigned rep</th>
@@ -449,7 +449,7 @@ function deleteContactNote(id,field,idx){
 }
 const PRIORITY_STYLE={now:'background:#D4A017;color:#fff;font-weight:700;',high:'background:#C0392B;color:#fff;font-weight:700;',med:'background:#F9E04B;color:#5a4a00;font-weight:600;',low:'background:#bbb;color:#fff;font-weight:600;'};
 function priorityStyle(v){return PRIORITY_STYLE[v]||'background:#f5f5f3;color:#aaa;';}
-function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);queueSave(id);render();}
+function setPriorityContact(id,val,sel){const c=getC(id);if(!c)return;c.priority=val;sel.style.cssText=priorityStyle(val);addAct(c.company,'priority',val,c.rep);queueSave(id);render();}
 function fmtLastActivity(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString([],{month:'short',day:'numeric'})+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}}
 const OUTREACH_LABEL={emailNote:'Email outreach',liNote:'LinkedIn outreach',officeVisitNote:'Office visit',siteVisitNote:'Site visit',phoneNote:'Phone call'};
 function appendContactNote(id,inputEl,field){
@@ -547,7 +547,7 @@ function queueSave(id){
 }
 
 function addAct(companyName,field,newVal,rep){
-  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,officeVisitNote:`Office visit: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`};
+  const msgs={status:`Status updated: <strong>${companyName}</strong> → ${STATUS_LABEL[newVal]||newVal}`,date:`Visit date: <strong>${companyName}</strong> — ${newVal}`,notes:`Note: <strong>${companyName}</strong> — "${newVal}"`,rep:`Rep assigned: <strong>${companyName}</strong> → ${newVal||'Unassigned'}`,emailDate:`Email outreach: <strong>${companyName}</strong> — ${newVal}`,emailNote:`Email note: <strong>${companyName}</strong> — "${newVal}"`,liDate:`LinkedIn outreach: <strong>${companyName}</strong> — ${newVal}`,liNote:`LinkedIn note: <strong>${companyName}</strong> — "${newVal}"`,officeVisitNote:`Office visit: <strong>${companyName}</strong> — "${newVal}"`,siteVisitNote:`Site visit: <strong>${companyName}</strong> — "${newVal}"`,contact:`Contact updated: <strong>${companyName}</strong>`,address:`Primary office address updated: <strong>${companyName}</strong>`,website:`Website updated: <strong>${companyName}</strong>`,phoneNote:`Phone call: <strong>${companyName}</strong> — "${newVal}"`,siteAddresses:`Site address updated: <strong>${companyName}</strong> — "${newVal}"`,priority:`Priority changed: <strong>${companyName}</strong> → ${newVal}`,nextSteps:`Next steps: <strong>${companyName}</strong> — "${newVal}"`,lots:`Lot count updated: <strong>${companyName}</strong> — ${newVal}`,zone:`Zone updated: <strong>${companyName}</strong> → ${newVal}`,source:`Met location: <strong>${companyName}</strong> — ${newVal}`,category:`Category changed: <strong>${companyName}</strong> → ${newVal}`};
   const entry={ts:nowStr(),day:todayKey(),dayLabel:todayStr(),msg:msgs[field]||`Updated: <strong>${companyName}</strong>`,field,status:field==='status'?newVal:null,builder:companyName,rep:rep||''};
   activity.push(entry);
   apiPost({action:'saveActivity',data:entry}).catch(()=>{});
@@ -712,7 +712,7 @@ function render(){
       <td>${renderContactsCell(c)}</td>
       <td><textarea class="ei" rows="2" placeholder="Where met" onblur="setField('${c.id}','source',this.value)" style="font-size:11px;color:#888;resize:none;word-break:break-word;">${esc(c.source)}</textarea></td>
       <td>
-        <textarea class="ei" placeholder="Office address" onblur="setField('${c.id}','address',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" style="margin-bottom:3px;resize:none;word-break:break-word;min-height:42px;overflow:hidden;">${esc(c.address)}</textarea>
+        <textarea class="ei" placeholder="Primary office address" onblur="setField('${c.id}','address',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" style="margin-bottom:3px;resize:none;word-break:break-word;min-height:42px;overflow:hidden;">${esc(c.address)}</textarea>
         <textarea class="ei" placeholder="Website" onblur="setField('${c.id}','website',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" style="color:#003DA5;resize:none;word-break:break-all;min-height:22px;overflow:hidden;">${esc(c.website)}</textarea>
       </td>
       <td>${renderSiteAddressesCell(c)}</td>
@@ -819,7 +819,7 @@ function renderReport(){
   days.forEach(day=>{
     const g=grouped[day];html+=`<div class="day-group"><div class="day-label">${g.label}</div>`;
     g.entries.slice().reverse().forEach(a=>{
-      const iconMap={status:'ti-arrow-right',visitDate:'ti-calendar',notes:'ti-note',rep:'ti-user',contact:'ti-id-badge',address:'ti-map-pin',website:'ti-world',emailDate:'ti-mail',emailNote:'ti-mail',liDate:'ti-brand-linkedin',liNote:'ti-brand-linkedin'};
+      const iconMap={status:'ti-arrow-right',visitDate:'ti-calendar',notes:'ti-note',rep:'ti-user',contact:'ti-id-badge',address:'ti-map-pin',website:'ti-world',emailDate:'ti-mail',emailNote:'ti-mail',liDate:'ti-brand-linkedin',liNote:'ti-brand-linkedin',phoneNote:'ti-phone',siteAddresses:'ti-map-pin',priority:'ti-flag',nextSteps:'ti-checklist',lots:'ti-building-community',zone:'ti-map',source:'ti-user-check',category:'ti-tag',officeVisitNote:'ti-building',siteVisitNote:'ti-map-pin'};
       const icon=iconMap[a.field]||'ti-pencil';
       const repTag=a.rep?`<span style="font-size:10px;color:#aaa;margin-left:8px;">via ${a.rep}</span>`:'';
       html+=`<div class="log-entry"><div class="log-time">${a.ts}</div><div class="log-text"><i class="ti ${icon}" style="font-size:11px;margin-right:4px;color:#aaa;"></i>${a.msg}${a.status?`<span class="log-badge ${LB_CLASS[a.status]}">${STATUS_LABEL[a.status]}</span>`:''}${repTag}</div></div>`;
@@ -888,6 +888,7 @@ function setSiteAddressBlur(id,idx,v){
   const c=getC(id);if(!c)return;
   if(!c.siteAddresses)c.siteAddresses=[];
   c.siteAddresses[idx]=v;
+  if(v.trim())addAct(c.company,'siteAddresses',v,c.rep);
   queueSave(id);
 }
 
@@ -903,7 +904,7 @@ const PRINT_COLS=[
   {h:'Zone / Area',       v:c=>c.zone||'—'},
   {h:'Contacts',          v:c=>(c.contacts||[]).map(ct=>[ct.name,ct.title,ct.phone,ct.email].filter(Boolean).join(' | ')).join('\n')||'—'},
   {h:'Met Where',         v:c=>c.source||'—'},
-  {h:'Address / Website', v:c=>[c.address,c.website].filter(Boolean).join('\n')||'—'},
+  {h:'Primary office address / website', v:c=>[c.address,c.website].filter(Boolean).join('\n')||'—'},
   {h:'Vacant Lots',       v:c=>c.lots!=null?c.lots:'—'},
   {h:'Assigned Rep',      v:c=>c.rep||'—'},
   {h:'Status',            v:c=>(STATUS_OPTS.find(o=>o.val===c.status)||{label:c.status||'—'}).label},
