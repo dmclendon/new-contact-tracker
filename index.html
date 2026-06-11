@@ -52,6 +52,8 @@ tr:last-child td{border-bottom:none;}
 tr:hover td{background:#fafaf8;}
 .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;white-space:nowrap;}
 .badge-builder{background:#E1F5EE;color:#085041;}
+.badge-luxury{background:#F0EAF8;color:#5B2D8E;}
+.badge-volume{background:#E6F1FB;color:#0C447C;}
 .badge-supplier{background:#EEEDFE;color:#3C3489;}
 .badge-architect{background:#E6F1FB;color:#0C447C;}
 .badge-realtor{background:#FAEEDA;color:#633806;}
@@ -198,6 +200,8 @@ tr:hover td{background:#fafaf8;}
         <label>Category</label>
         <select id="m-category">
           <option value="Builder">Builder</option>
+          <option value="Luxury">Luxury</option>
+          <option value="Volume">Volume</option>
           <option value="Supplier">Supplier</option>
           <option value="Architect">Architect</option>
           <option value="Realtor">Realtor</option>
@@ -299,6 +303,8 @@ tr:hover td{background:#fafaf8;}
         <select id="f-cat" onchange="render()">
           <option value="">All categories</option>
           <option>Builder</option>
+          <option>Luxury</option>
+          <option>Volume</option>
           <option>Supplier</option>
           <option>Architect</option>
           <option>Realtor</option>
@@ -400,7 +406,7 @@ const SCRIPT_URL='https://script.google.com/macros/s/AKfycbxPuP7s-GqsS-7ItBMZqqT
 const STATUS_OPTS=[{val:"none",label:"Not contacted"},{val:"contacted",label:"Contacted"},{val:"replied",label:"Received Reply"},{val:"visited",label:"Site visit"},{val:"office_visit",label:"Office Visit"},{val:"meeting",label:"Meeting set"},];
 const STATUS_LABEL={none:"Not contacted",contacted:"Contacted",replied:"Received Reply",visited:"Site visit",office_visit:"Office Visit",meeting:"Meeting set",};
 const LB_CLASS={none:"lb-none",contacted:"lb-contacted",replied:"lb-replied",visited:"lb-visited",office_visit:"lb-office-visit",meeting:"lb-meeting",};
-const CAT_CLASS={Builder:"badge-builder",Supplier:"badge-supplier",Architect:"badge-architect",Realtor:"badge-realtor",Other:"badge-other"};
+const CAT_CLASS={Builder:"badge-builder",Luxury:"badge-luxury",Volume:"badge-volume",Supplier:"badge-supplier",Architect:"badge-architect",Realtor:"badge-realtor",Other:"badge-other"};
 const REP_COLORS=[{bg:"#E6F1FB",color:"#0C447C"},{bg:"#E1F5EE",color:"#085041"},{bg:"#EEEDFE",color:"#3C3489"},{bg:"#FAEEDA",color:"#633806"},{bg:"#FAECE7",color:"#712B13"},{bg:"#FBEAF0",color:"#72243E"},{bg:"#EAF3DE",color:"#27500A"},{bg:"#F1EFE8",color:"#444441"}];
 
 function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
@@ -606,6 +612,17 @@ async function exportToBuilderTracker(id){
     const existing=await fetch(SCRIPT_URL+'?'+new URLSearchParams({action:'getAll'})).then(r=>r.json());
     const usedIds=Object.keys(existing.builderInfo||{}).map(Number).filter(n=>!isNaN(n));
     const newId=usedIds.length?Math.max(...usedIds)+1:100;
+    const now=new Date();
+    const ts=now.toLocaleDateString([],{month:'short',day:'numeric'})+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const day=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    // Build notes — include "How we met" (source) as the first note entry
+    const noteEntries=[];
+    if(c.source&&c.source.trim())noteEntries.push({text:`How we met: ${c.source.trim()}`,ts,day});
+    if(c.notes&&c.notes.trim()){
+      // notes may already be JSON array or plain text
+      try{const parsed=JSON.parse(c.notes);if(Array.isArray(parsed))parsed.forEach(e=>noteEntries.push(e));else noteEntries.push({text:c.notes,ts,day});}
+      catch(e){noteEntries.push({text:c.notes,ts,day});}
+    }
     // Save builder info
     await apiPost({action:'saveBuilderInfo',data:{
       builderId:newId,
@@ -622,6 +639,28 @@ async function exportToBuilderTracker(id){
     }});
     // Save contacts
     await apiPost({action:'saveContacts',data:{builderId:newId,contacts:c.contacts||[]}});
+    // Save log — carries over all outreach history + notes
+    await apiPost({action:'saveLog',data:{
+      builderId:newId,
+      status:c.status||'none',
+      statusLog:c.statusLog||'',
+      rep:c.rep||'',
+      priority:c.priority||'',
+      notes:noteEntries.length?JSON.stringify(noteEntries):'',
+      emailDate:c.emailDate||'',
+      emailNote:c.emailNote||'',
+      liDate:c.liDate||'',
+      liNote:c.liNote||'',
+      officeVisitNote:c.officeVisitNote||'',
+      siteVisitNote:c.siteVisitNote||'',
+      phoneNote:c.phoneNote||'',
+      nextSteps:c.nextSteps||'',
+      angle:'',
+      action:'',
+      date:c.visitDate||'',
+      lastActivity:c.lastActivity||'',
+      createdAt:c.createdAt||day
+    }});
     showToast(`✓ "${c.company}" exported to Builder Tracker!`);
   }catch(e){
     showToast('Export failed — check your connection.');
@@ -729,7 +768,15 @@ function render(){
     return`<tr>
       <td class="col-freeze-1">
         <input class="ei" value="${esc(c.company)}" placeholder="Company" onblur="setField('${c.id}','company',this.value)" style="font-weight:600;font-size:12px;"/>
-        <span class="badge ${catClass}" style="margin-top:3px;display:inline-block;">${c.category||'Other'}</span>
+        <select class="fsel" onchange="setField('${c.id}','category',this.value);render()" style="margin-top:3px;font-size:11px;">
+          <option value="Builder"${(c.category||'')==='Builder'?' selected':''}>Builder</option>
+          <option value="Luxury"${(c.category||'')==='Luxury'?' selected':''}>Luxury</option>
+          <option value="Volume"${(c.category||'')==='Volume'?' selected':''}>Volume</option>
+          <option value="Supplier"${(c.category||'')==='Supplier'?' selected':''}>Supplier</option>
+          <option value="Architect"${(c.category||'')==='Architect'?' selected':''}>Architect</option>
+          <option value="Realtor"${(c.category||'')==='Realtor'?' selected':''}>Realtor</option>
+          <option value="Other"${(c.category||'')==='Other'?' selected':''}>Other</option>
+        </select>
       </td>
       <td>
         <select class="fsel" onchange="setPriorityContact('${c.id}',this.value,this)" style="${priorityStyle(c.priority||'')}">
