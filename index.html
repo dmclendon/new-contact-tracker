@@ -528,8 +528,8 @@ async function loadAll(){
 
 function getC(id){return contacts.find(c=>c.id===id);}
 const LOCAL_FIELDS=['nextSteps','statusLog','priority','officeVisitNote'];
-function saveLocalAnnotations(id){const c=getC(id);if(!c)return;try{LOCAL_FIELDS.forEach(f=>{localStorage.setItem(`ct_${f}_${id}`,c[f]||'');});}catch(e){}}
-function restoreLocalAnnotations(){contacts.forEach(c=>{try{LOCAL_FIELDS.forEach(f=>{const v=localStorage.getItem(`ct_${f}_${c.id}`);if(v)c[f]=v;});}catch(e){}});}
+function saveLocalAnnotations(id){const c=getC(id);if(!c)return;try{LOCAL_FIELDS.forEach(f=>{localStorage.setItem(`ct_${f}_${id}`,c[f]||'');});localStorage.setItem(`ct_siteAddresses_${id}`,JSON.stringify(c.siteAddresses||[]));}catch(e){}}
+function restoreLocalAnnotations(){contacts.forEach(c=>{try{LOCAL_FIELDS.forEach(f=>{const v=localStorage.getItem(`ct_${f}_${c.id}`);if(v)c[f]=v;});const sa=localStorage.getItem(`ct_siteAddresses_${c.id}`);if(sa){try{const parsed=JSON.parse(sa);if(Array.isArray(parsed)&&parsed.length)c.siteAddresses=parsed;}catch(e){}};}catch(e){}});}
 
 function nowStr(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
 function todayStr(){return new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
@@ -590,13 +590,44 @@ function deleteStatusEntry(id,idx){
   queueSave(id);render();
 }
 function setDate(id,v){setField(id,'visitDate',v);}
-function setRep(id,v){setField(id,'rep',v);render();}
+function setRep(id,v){const c=getC(id);if(c)addAct(c.company,'rep',v,v);setField(id,'rep',v);render();}
 function setEmailDate(id,v){setField(id,'emailDate',v);render();}
 function setLiDate(id,v){setField(id,'liDate',v);render();}
 
 function addContact(id){const c=getC(id);if(!c)return;c.contacts.push({name:'',title:'',phone:'',email:'',linkedin:''});queueSave(id);render();setTimeout(()=>{const rows=document.querySelectorAll(`[data-cr="${id}"]`);if(rows.length){const inp=rows[rows.length-1].querySelector('input');if(inp)inp.focus();}},50);}
 function removeContact(id,ci){const c=getC(id);if(!c||c.contacts.length<=1){showToast('At least one contact required.');return;}c.contacts.splice(ci,1);queueSave(id);render();}
 
+async function exportToBuilderTracker(id){
+  const c=getC(id);if(!c)return;
+  if(!confirm(`Export "${c.company}" to the Builder Tracker?\n\nThis will add them as a new builder entry. You can still keep them here too.`))return;
+  showToast('Exporting…');
+  try{
+    // Fetch current builder IDs to generate a unique new one
+    const existing=await fetch(SCRIPT_URL+'?'+new URLSearchParams({action:'getAll'})).then(r=>r.json());
+    const usedIds=Object.keys(existing.builderInfo||{}).map(Number).filter(n=>!isNaN(n));
+    const newId=usedIds.length?Math.max(...usedIds)+1:100;
+    // Save builder info
+    await apiPost({action:'saveBuilderInfo',data:{
+      builderId:newId,
+      name:c.company||'',
+      address:c.address||'',
+      website:c.website||'',
+      genPhone:'',
+      contactEmail:'',
+      lots:c.lots===null||c.lots===undefined?'':c.lots,
+      siteAddresses:c.siteAddresses||[],
+      type:c.category||'',
+      zone:c.zone||'',
+      isNew:true
+    }});
+    // Save contacts
+    await apiPost({action:'saveContacts',data:{builderId:newId,contacts:c.contacts||[]}});
+    showToast(`✓ "${c.company}" exported to Builder Tracker!`);
+  }catch(e){
+    showToast('Export failed — check your connection.');
+    console.error(e);
+  }
+}
 function deleteContact(id){
   const c=getC(id);if(!c)return;
   if(!confirm(`Delete ${c.company}? This cannot be undone.`))return;
@@ -732,9 +763,14 @@ function render(){
       <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
       <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
       <td>
-        <button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete contact" style="position:static;font-size:18px;color:#ddd;padding:2px;">
-          <i class="ti ti-trash" style="font-size:13px;"></i>
-        </button>
+        <div style="display:flex;flex-direction:column;gap:5px;align-items:center;">
+          <button onclick="exportToBuilderTracker('${c.id}')" title="Export to Builder Tracker" style="font-size:10px;font-weight:600;color:#fff;background:#003DA5;border:none;border-radius:5px;padding:4px 7px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:3px;">
+            <i class="ti ti-transfer-out" style="font-size:11px;"></i> → Builders
+          </button>
+          <button class="del-btn" onclick="deleteContact('${c.id}')" title="Delete contact" style="position:static;font-size:18px;color:#ddd;padding:2px;">
+            <i class="ti ti-trash" style="font-size:13px;"></i>
+          </button>
+        </div>
       </td>
     </tr>`;
   }).join('');
@@ -877,13 +913,16 @@ function addSiteAddress(id){
   const c=getC(id);if(!c)return;
   if(!c.siteAddresses)c.siteAddresses=[];
   c.siteAddresses.push('');
+  addAct(c.company,'siteAddresses','(new address added)',c.rep);
   queueSave(id);render();
   setTimeout(()=>{const rows=document.querySelectorAll(`[data-sa="${id}"]`);if(rows.length){const inp=rows[rows.length-1].querySelector('input');if(inp)inp.focus();}},50);
 }
 function removeSiteAddress(id,idx){
   const c=getC(id);if(!c)return;
   if(!c.siteAddresses)c.siteAddresses=[];
+  const removed=c.siteAddresses[idx]||'(empty)';
   c.siteAddresses.splice(idx,1);
+  addAct(c.company,'siteAddresses','Removed: '+removed,c.rep);
   queueSave(id);render();
 }
 function setSiteAddressBlur(id,idx,v){
