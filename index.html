@@ -434,6 +434,18 @@ function renderLogHtml(entries,appendCmd,delCmd){
   const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><span class="note-text">${esc(e.text)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="${delCmd.replace('IDX',i)}" title="Delete entry">×</button></div>`).join('');
   return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){${appendCmd};}"/></div></div>`;
 }
+function renderEditableNotesHtml(id,entries){
+  const rows=entries.map((e,i)=>`<div class="note-entry"><div class="note-body"><textarea class="ei" style="font-size:12px;width:100%;resize:none;overflow:hidden;min-height:22px;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onblur="editContactNote('${id}','notes',${i},this.value)">${esc(e.text)}</textarea>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-del" onclick="deleteContactNote('${id}','notes',${i})" title="Delete entry">×</button></div>`).join('');
+  return`<div class="notes-log">${rows}<div class="note-add"><input placeholder="Add note…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${id}',this,'notes');}"/></div></div>`;
+}
+function editContactNote(id,field,idx,v){
+  const c=getC(id);if(!c)return;
+  const entries=parseNotes(c[field]||'');
+  if(!entries[idx])return;
+  entries[idx].text=v;
+  c[field]=entries.map(e=>`[${e.ts}] ${e.text}`).join('\n');
+  queueSave(id);
+}
 function renderNextStepsHtml(id,entries){
   const rows=entries.map((e,i)=>{const done=e.text.startsWith('[DONE] ');const displayText=done?e.text.slice(7):e.text;return`<div class="note-entry${done?' note-done':''}"><div class="note-body"><span class="note-text">${esc(displayText)}</span>${e.ts?`<span class="note-ts">${esc(e.ts)}</span>`:''}</div><button class="note-check" onclick="checkContactNote('${id}','nextSteps',${i})" title="Mark done">✓</button><button class="note-del" onclick="deleteContactNote('${id}','nextSteps',${i})" title="Delete">×</button></div>`;}).join('');
   return`<div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Next Steps</div><div class="notes-log">${rows}<div class="note-add"><input placeholder="Next step…" onkeydown="if(event.key==='Enter'&&this.value.trim()){appendContactNote('${id}',this,'nextSteps');}"/></div></div>`;
@@ -808,7 +820,7 @@ function render(){
       <td>${renderPhoneCallCell(c)}</td>
       <td><select class="fsel" onchange="setStatus('${c.id}',this.value)">${statOpts}</select>${renderStatusLog(c.id,parseNotes(c.statusLog||''))}</td>
       <td style="font-size:11px;color:#888;white-space:nowrap;">${fmtLastActivity(c.lastActivity||'')}</td>
-      <td>${renderLogHtml(parseNotes(c.notes),`appendContactNote('${c.id}',this,'notes')`,`deleteContactNote('${c.id}','notes',IDX)`)}</td>
+      <td>${renderEditableNotesHtml('${c.id}',parseNotes(c.notes))}</td>
       <td>
         <div style="display:flex;flex-direction:column;gap:5px;align-items:center;">
           <button onclick="exportToBuilderTracker('${c.id}')" title="Export to Builder Tracker" style="font-size:10px;font-weight:600;color:#fff;background:#003DA5;border:none;border-radius:5px;padding:4px 7px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:3px;">
